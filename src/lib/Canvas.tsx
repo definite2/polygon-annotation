@@ -89,7 +89,6 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
       const _flattenedPoints = points
         .concat(position)
         .reduce((a, b) => a.concat(b), []);
-      console.log(_flattenedPoints);
       polygon = {
         ...polygon,
         points: [...points, mousePos],
@@ -104,7 +103,6 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
     const stage = e.target.getStage();
     if (!stage) return;
     const mousePos = getMousePos(stage);
-    //console.log(mousePos);
     dispatch(setMousePosition(mousePos));
   };
 
@@ -162,7 +160,6 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
       if (pos[1] > stage.height()) pos[1] = stage.height();
     }
 
-    console.log('drag mv', pos);
     const { points } = polygon;
     const newPoints = [
       ...points.slice(0, index),

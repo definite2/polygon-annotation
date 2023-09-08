@@ -74,13 +74,10 @@ const Polygon = ({
     if (!stageObject) return { x, y };
     const sw = stageObject.width();
     const sh = stageObject.height();
-    console.log({ pos });
-    console.log({ sw, sh });
     if (x + vertexRadius > sw) x = sw - vertexRadius;
     if (x - vertexRadius < 0) x = vertexRadius;
     if (y + vertexRadius > sh) y = sh - vertexRadius;
     if (y - vertexRadius < 0) y = vertexRadius;
-    console.log({ x, y });
     return { x, y };
   };
 
