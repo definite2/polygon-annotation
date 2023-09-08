@@ -10,7 +10,7 @@ import * as packageJson from './package.json';
 export default defineConfig((configEnv) => ({
   plugins: [
     dts({
-      include: ['src/component/'],
+      include: ['src/lib/'],
     }),
     react(),
     tsConfigPaths(),
@@ -21,7 +21,7 @@ export default defineConfig((configEnv) => ({
   ],
   build: {
     lib: {
-      entry: resolve('src', 'component/index.ts'),
+      entry: resolve('src', 'lib/index.ts'),
       name: 'polygon-annotation',
       formats: ['es', 'umd'],
       fileName: (format) => `polygon-annotation.${format}.js`,

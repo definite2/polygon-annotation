@@ -19,9 +19,9 @@
     "declarationMap": true,
     "baseUrl": "src",
     "paths": {
-      "react-vite-library": ["src/component/index.ts"]
+      "polygon-annotation": ["src/lib/index.ts"]
     },
-    "typeRoots": ["node_modules/@types", "src/component/index.d.ts"]
+    "typeRoots": ["node_modules/@types", "src/lib/index.d.ts"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

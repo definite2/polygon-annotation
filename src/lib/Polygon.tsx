@@ -10,7 +10,7 @@ const LineColor = '#00F1FF';
 const FillColor = 'rgb(140,30,255,0.5)';
 const VertexColor = '#FF019A';
 
-type PolygonAnnotationProps = {
+type PolygonProps = {
   points: number[][];
   flattenedPoints: number[] | undefined;
   isFinished: boolean;
@@ -32,7 +32,7 @@ const Polygon = ({
   handleMouseOverStartPoint,
   handleMouseOutStartPoint,
   handlePointDragMove,
-}: PolygonAnnotationProps) => {
+}: PolygonProps) => {
   const [stageObject, setStageObject] = useState<Konva.Stage | null>(null);
   const [minMaxX, setMinMaxX] = useState([0, 0]); //min and max in x axis
   const [minMaxY, setMinMaxY] = useState([0, 0]); //min and max in y axis

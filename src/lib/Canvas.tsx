@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import React, { useMemo, useState, useEffect, ReactNode } from 'react';
+import { useSelector, useDispatch, shallowEqual, Provider } from 'react-redux';
 import { Layer, Image, Stage } from 'react-konva/lib/ReactKonvaCore';
 import { KonvaEventObject } from 'konva/lib/Node';
 import {
@@ -7,10 +7,10 @@ import {
   setMousePosition,
   setPolygons,
 } from 'store/slices/polygonSlice';
-import { RootState } from 'store';
+import { RootState, store } from 'store';
 import Polygon from './Polygon';
 
-type CanvasProps = {
+export type CanvasProps = {
   imageSource: string;
   maxPolygons?: number;
 };
@@ -261,4 +261,19 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
   );
 };
 
-export default Canvas;
+export const PolygonAnnotation = ({
+  bgImage,
+  maxPolygons,
+  children,
+}: {
+  bgImage: string;
+  children: ReactNode;
+  maxPolygons?: number;
+}) => {
+  return (
+    <Provider store={store}>
+      <Canvas imageSource={bgImage} maxPolygons={maxPolygons} />
+      {children}
+    </Provider>
+  );
+};
