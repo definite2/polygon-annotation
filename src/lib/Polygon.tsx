@@ -4,35 +4,35 @@ import { Line, Circle, Group } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
 import { minMax } from 'utils';
+import { PolygonProps } from './types';
 
-// todo: move to config
 const LineColor = '#00F1FF';
 const FillColor = 'rgb(140,30,255,0.5)';
 const VertexColor = '#FF019A';
-
-type PolygonProps = {
-  points: number[][];
-  flattenedPoints: number[] | undefined;
-  isFinished: boolean;
-  handlePointDragMove: (e: KonvaEventObject<DragEvent>) => void;
-  handlePointDragEnd: (e: KonvaEventObject<DragEvent>) => void;
-  handleGroupDragEnd: (e: KonvaEventObject<DragEvent>) => void;
-  handleMouseOverStartPoint: (e: KonvaEventObject<MouseEvent>) => void;
-  handleMouseOutStartPoint: (e: KonvaEventObject<MouseEvent>) => void;
-  vertexRadius?: number;
-};
+const VertexRadius = 6;
 
 const Polygon = ({
   points,
   flattenedPoints,
   isFinished,
-  vertexRadius = 6,
+  config = {
+    vertexRadius: VertexRadius,
+    lineColor: LineColor,
+    fillColor: FillColor,
+    vertexColor: VertexColor,
+  },
   handlePointDragEnd,
   handleGroupDragEnd,
   handleMouseOverStartPoint,
   handleMouseOutStartPoint,
   handlePointDragMove,
 }: PolygonProps) => {
+  const {
+    vertexRadius = VertexRadius,
+    lineColor,
+    fillColor,
+    vertexColor,
+  } = config;
   const [stageObject, setStageObject] = useState<Konva.Stage | null>(null);
   const [minMaxX, setMinMaxX] = useState([0, 0]); //min and max in x axis
   const [minMaxY, setMinMaxY] = useState([0, 0]); //min and max in y axis
@@ -51,8 +51,8 @@ const Polygon = ({
   };
 
   const handleGroupDragStart = () => {
-    let arrX = points.map((p) => p[0]);
-    let arrY = points.map((p) => p[1]);
+    const arrX = points.map((p) => p[0]);
+    const arrY = points.map((p) => p[1]);
     setMinMaxX(minMax(arrX));
     setMinMaxY(minMax(arrY));
   };
@@ -94,10 +94,10 @@ const Polygon = ({
       <Line
         name="line"
         points={flattenedPoints}
-        stroke={LineColor}
+        stroke={lineColor}
         strokeWidth={3}
         closed={isFinished}
-        fill={FillColor}
+        fill={fillColor}
       />
       {points.map((point, index) => {
         const x = point[0] - vertexRadius / 2;
@@ -117,8 +117,8 @@ const Polygon = ({
             x={x}
             y={y}
             radius={vertexRadius}
-            fill={VertexColor}
-            stroke={LineColor}
+            fill={vertexColor}
+            stroke={lineColor}
             strokeWidth={2}
             draggable
             onDragMove={handlePointDragMove}

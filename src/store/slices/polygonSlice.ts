@@ -1,19 +1,20 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { RootState } from 'store';
 
-export interface PolygonState {
-  polygons: {
-    points: number[][];
-    flattenedPoints: number[];
-    isFinished: boolean;
-    isMouseOverPoint: boolean;
-  }[];
+export type Polygon = {
+  points: number[][];
+  flattenedPoints: number[];
+  isFinished: boolean;
+  isMouseOverPoint: boolean;
+};
+
+export interface PolygonAnnotationState {
+  polygons: Polygon[];
   activePolygonIndex: number;
-  position: number[];
+  position: number[]; //current mouse position
   shouldUpdateHistory?: boolean;
 }
 
-const initialState: PolygonState = {
+const initialState: PolygonAnnotationState = {
   polygons: [
     {
       points: [],
@@ -34,7 +35,7 @@ const polygonSlice = createSlice({
     setPolygons: (
       state,
       action: PayloadAction<{
-        polygons: PolygonState['polygons'];
+        polygons: PolygonAnnotationState['polygons'];
         shouldUpdate?: boolean;
       }>
     ) => {

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, ReactNode } from 'react';
 import { useSelector, useDispatch, shallowEqual, Provider } from 'react-redux';
-import { Layer, Image, Stage } from 'react-konva/lib/ReactKonvaCore';
+import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import {
   setActivePolygonIndex,
@@ -9,13 +9,9 @@ import {
 } from 'store/slices/polygonSlice';
 import { RootState, store } from 'store';
 import Polygon from './Polygon';
+import { CanvasProps, PolygonConfigProps } from './types';
 
-export type CanvasProps = {
-  imageSource: string;
-  maxPolygons?: number;
-};
-
-const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
+const Canvas = ({ imageSource, maxPolygons = 1, config }: CanvasProps) => {
   const dispatch = useDispatch();
   const [image, setImage] = useState<HTMLImageElement>();
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -46,6 +42,7 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
     };
   }, [videoElement]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getMousePos = (stage: any): number[] => {
     return [
       stage.getPointerPosition()?.x ?? 0,
@@ -210,8 +207,8 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
     let polygon = copy[polygonKey];
     const { points } = polygon;
     if (e.target.name() === 'polygon') {
-      let result: number[][] = [];
-      let copyPoints = [...points];
+      const result: number[][] = [];
+      const copyPoints = [...points];
       copyPoints.forEach((point) =>
         result.push([point[0] + e.target.x(), point[1] + e.target.y()])
       );
@@ -254,6 +251,7 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
             }
             handleMouseOutStartPoint={(e) => handleMouseOutStartPoint(e, index)}
             handleGroupDragEnd={(e) => handleGroupDragEnd(e, index)}
+            config={config}
           />
         ))}
       </Layer>
@@ -264,15 +262,17 @@ const Canvas = ({ imageSource, maxPolygons = 1 }: CanvasProps) => {
 export const PolygonAnnotation = ({
   bgImage,
   maxPolygons,
+  config,
   children,
 }: {
   bgImage: string;
   children: ReactNode;
   maxPolygons?: number;
+  config?: PolygonConfigProps;
 }) => {
   return (
     <Provider store={store}>
-      <Canvas imageSource={bgImage} maxPolygons={maxPolygons} />
+      <Canvas imageSource={bgImage} maxPolygons={maxPolygons} config={config} />
       {children}
     </Provider>
   );

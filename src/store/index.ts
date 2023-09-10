@@ -5,7 +5,7 @@ import polygonReducer from './slices/polygonSlice';
 export const store = configureStore({
   reducer: {
     polygon: undoable(polygonReducer, {
-      filter: function filterActions(action, currentState, previousHistory) {
+      filter: function filterActions(action) {
         return (
           action.type === 'polygon/setPolygons' && action.payload.shouldUpdate
         );
