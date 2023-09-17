@@ -1,6 +1,6 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 
-export type PolygonConfigProps = {
+export type PolygonStyleProps = {
   lineColor?: string;
   fillColor?: string;
   vertexColor?: string;
@@ -10,14 +10,18 @@ export type PolygonConfigProps = {
 export type CanvasProps = {
   imageSource: string;
   maxPolygons?: number;
-  config?: PolygonConfigProps;
+  polygonStyle?: PolygonStyleProps;
+  imageSize?: {
+    width: number;
+    height: number;
+  };
 };
 
 export type PolygonProps = {
   points: number[][];
   flattenedPoints: number[] | undefined;
   isFinished: boolean;
-  config?: PolygonConfigProps;
+  polygonStyle?: PolygonStyleProps;
   handlePointDragMove: (e: KonvaEventObject<DragEvent>) => void;
   handlePointDragEnd: (e: KonvaEventObject<DragEvent>) => void;
   handleGroupDragEnd: (e: KonvaEventObject<DragEvent>) => void;

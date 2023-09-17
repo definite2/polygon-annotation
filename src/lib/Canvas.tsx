@@ -9,9 +9,14 @@ import {
 } from 'store/slices/polygonSlice';
 import { RootState, store } from 'store';
 import Polygon from './Polygon';
-import { CanvasProps, PolygonConfigProps } from './types';
+import { CanvasProps, PolygonStyleProps } from './types';
 
-const Canvas = ({ imageSource, maxPolygons = 1, config }: CanvasProps) => {
+const Canvas = ({
+  imageSource,
+  maxPolygons = 1,
+  polygonStyle,
+  imageSize,
+}: CanvasProps) => {
   const dispatch = useDispatch();
   const [image, setImage] = useState<HTMLImageElement>();
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -20,27 +25,32 @@ const Canvas = ({ imageSource, maxPolygons = 1, config }: CanvasProps) => {
     shallowEqual
   );
 
-  const videoElement = useMemo(() => {
+  const imageElement = useMemo(() => {
     const element = new window.Image();
-    element.width = 650;
-    element.height = 302;
     element.src = imageSource;
     return element;
   }, [imageSource]);
 
   useEffect(() => {
     const onload = function () {
-      setSize({
-        width: videoElement.width,
-        height: videoElement.height,
-      });
-      setImage(videoElement);
+      if (imageSize?.width && imageSize?.height) {
+        setSize({
+          width: imageSize.width,
+          height: imageSize.height,
+        });
+      } else {
+        setSize({
+          width: imageElement.width,
+          height: imageElement.height,
+        });
+      }
+      setImage(imageElement);
     };
-    videoElement.addEventListener('load', onload);
+    imageElement.addEventListener('load', onload);
     return () => {
-      videoElement.removeEventListener('load', onload);
+      imageElement.removeEventListener('load', onload);
     };
-  }, [videoElement]);
+  }, [imageElement, imageSize?.height, imageSize?.width]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getMousePos = (stage: any): number[] => {
@@ -225,8 +235,8 @@ const Canvas = ({ imageSource, maxPolygons = 1, config }: CanvasProps) => {
 
   return (
     <Stage
-      width={size.width || 650}
-      height={size.height || 302}
+      width={size.width}
+      height={size.height}
       onMouseMove={handleMouseMove}
       onClick={handleMouseClick}
     >
@@ -251,7 +261,7 @@ const Canvas = ({ imageSource, maxPolygons = 1, config }: CanvasProps) => {
             }
             handleMouseOutStartPoint={(e) => handleMouseOutStartPoint(e, index)}
             handleGroupDragEnd={(e) => handleGroupDragEnd(e, index)}
-            config={config}
+            polygonStyle={polygonStyle}
           />
         ))}
       </Layer>
@@ -262,17 +272,24 @@ const Canvas = ({ imageSource, maxPolygons = 1, config }: CanvasProps) => {
 export const PolygonAnnotation = ({
   bgImage,
   maxPolygons,
-  config,
+  polygonStyle,
+  imageSize,
   children,
 }: {
   bgImage: string;
-  children: ReactNode;
+  children?: ReactNode;
   maxPolygons?: number;
-  config?: PolygonConfigProps;
+  imageSize?: { width: number; height: number };
+  polygonStyle?: PolygonStyleProps;
 }) => {
   return (
     <Provider store={store}>
-      <Canvas imageSource={bgImage} maxPolygons={maxPolygons} config={config} />
+      <Canvas
+        imageSource={bgImage}
+        maxPolygons={maxPolygons}
+        polygonStyle={polygonStyle}
+        imageSize={imageSize}
+      />
       {children}
     </Provider>
   );

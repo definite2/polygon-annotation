@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PolygonAnnotation, PolygonConfigProps } from 'lib';
+import { PolygonAnnotation, PolygonStyleProps } from 'lib';
 
 import Toolbar from './Toolbar';
 
@@ -7,27 +7,25 @@ const videoSource = './space_landscape.jpg';
 
 const AnnotationDraw = () => {
   const [maxPolygons, setMaxPolygons] = useState<number>(1);
-  const [config, setConfig] = useState<PolygonConfigProps>({
+  const [polygonStyle, setPolygonStyle] = useState<PolygonStyleProps>({
     vertexRadius: 6,
     lineColor: '#1ea703',
     fillColor: '#37f71139',
     vertexColor: '#ff0000',
   });
   return (
-    <>
-      <PolygonAnnotation
-        bgImage={videoSource}
+    <PolygonAnnotation
+      bgImage={videoSource}
+      maxPolygons={maxPolygons}
+      polygonStyle={polygonStyle}
+    >
+      <Toolbar
         maxPolygons={maxPolygons}
-        config={config}
-      >
-        <Toolbar
-          maxPolygons={maxPolygons}
-          setMaxPolygons={setMaxPolygons}
-          config={config}
-          setConfig={setConfig}
-        />
-      </PolygonAnnotation>
-    </>
+        setMaxPolygons={setMaxPolygons}
+        config={polygonStyle}
+        setConfig={setPolygonStyle}
+      />
+    </PolygonAnnotation>
   );
 };
 

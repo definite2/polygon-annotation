@@ -1,7 +1,7 @@
 import { useUndoRedo } from 'lib/useDrawHistory';
 import { useGetPolygonData } from 'lib/useGetPolygonData';
 import './Toolbar.css';
-import { PolygonConfigProps } from 'lib';
+import { PolygonStyleProps } from 'lib';
 
 const Toolbar = ({
   maxPolygons,
@@ -10,10 +10,10 @@ const Toolbar = ({
   setConfig,
 }: {
   maxPolygons: number;
-  config: PolygonConfigProps;
+  config: PolygonStyleProps;
 
   setMaxPolygons: (maxPolygons: number) => void;
-  setConfig: (config: PolygonConfigProps) => void;
+  setConfig: (config: PolygonStyleProps) => void;
 }) => {
   const { undo, redo, canUndo, canRedo } = useUndoRedo();
   const { polygons } = useGetPolygonData();

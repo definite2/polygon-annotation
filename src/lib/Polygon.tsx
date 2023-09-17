@@ -15,7 +15,7 @@ const Polygon = ({
   points,
   flattenedPoints,
   isFinished,
-  config = {
+  polygonStyle = {
     vertexRadius: VertexRadius,
     lineColor: LineColor,
     fillColor: FillColor,
@@ -32,7 +32,7 @@ const Polygon = ({
     lineColor,
     fillColor,
     vertexColor,
-  } = config;
+  } = polygonStyle;
   const [stageObject, setStageObject] = useState<Konva.Stage | null>(null);
   const [minMaxX, setMinMaxX] = useState([0, 0]); //min and max in x axis
   const [minMaxY, setMinMaxY] = useState([0, 0]); //min and max in y axis
