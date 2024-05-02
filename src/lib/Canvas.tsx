@@ -2,11 +2,8 @@ import React, { useMemo, useState, useEffect, ReactNode } from 'react';
 import { useSelector, useDispatch, shallowEqual, Provider } from 'react-redux';
 import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import {
-  setActivePolygonIndex,
-  setMousePosition,
-  setPolygons,
-} from 'store/slices/polygonSlice';
+import { v4 as uuidv4 } from 'uuid';
+import { setActivePolygonIndex, setPolygons } from 'store/slices/polygonSlice';
 import { RootState, store } from 'store';
 import Polygon from './Polygon';
 import { CanvasProps, PolygonStyleProps } from './types';
@@ -20,7 +17,7 @@ const Canvas = ({
   const dispatch = useDispatch();
   const [image, setImage] = useState<HTMLImageElement>();
   const [size, setSize] = useState({ width: 0, height: 0 });
-  const { position, polygons, activePolygonIndex } = useSelector(
+  const { polygons, activePolygonIndex } = useSelector(
     (state: RootState) => state.polygon.present,
     shallowEqual
   );
@@ -59,58 +56,78 @@ const Canvas = ({
       stage.getPointerPosition()?.y ?? 0,
     ];
   };
-
+  // const debouncedHandleMouseMove = debounce((e) => handleMouseClick(e), 100);
   const handleMouseClick = (e: KonvaEventObject<MouseEvent>) => {
     let activeKey = activePolygonIndex;
     const copy = [...polygons];
+    // prevent adding new polygon if maxPolygons is reached
+    if (copy.filter((p) => p.isFinished).length === maxPolygons) return;
+
     let polygon = copy[activeKey];
     const { isFinished, isMouseOverPoint } = polygon;
+    // prevent adding new point on vertex if it is not mouse over
     if (e.target.name() === 'vertex' && !isMouseOverPoint) {
+      console.log('not mouse over point', polygons, polygon);
       return;
     }
-    if (activeKey + 1 > maxPolygons) return;
     if (isFinished) {
-      activeKey++;
-      if (activeKey + 1 > maxPolygons) return;
+      // create new polygon
       polygon = {
+        id: uuidv4(),
         points: [],
         flattenedPoints: [],
         isFinished: false,
         isMouseOverPoint: false,
       };
+      activeKey += 1;
       dispatch(setActivePolygonIndex(activeKey));
     }
-
     const { points } = polygon;
     const stage = e.target.getStage();
     const mousePos = getMousePos(stage);
-
     if (isMouseOverPoint && points.length >= 3) {
-      const _flattenedPoints = points.reduce((a, b) => a.concat(b), []);
       polygon = {
         ...polygon,
         isFinished: true,
-        flattenedPoints: _flattenedPoints,
       };
+      console.log('polygon is finished', polygon);
     } else {
-      const _flattenedPoints = points
-        .concat(position)
-        .reduce((a, b) => a.concat(b), []);
       polygon = {
         ...polygon,
         points: [...points, mousePos],
-        flattenedPoints: _flattenedPoints,
       };
+      console.log('polygon is not finished', polygon);
     }
     copy[activeKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdate: true }));
+    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
   };
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
     const stage = e.target.getStage();
     if (!stage) return;
     const mousePos = getMousePos(stage);
-    dispatch(setMousePosition(mousePos));
+    // set flattened points for active polygon
+    const copy = [...polygons];
+    let polygon = copy[activePolygonIndex];
+    const { points, isFinished, isMouseOverPoint } = polygon;
+    if (isFinished) return;
+    if (isMouseOverPoint && points.length >= 3) {
+      const _flattenedPoints = points.reduce((a, b) => a.concat(b), []);
+      polygon = {
+        ...polygon,
+        flattenedPoints: _flattenedPoints,
+      };
+    } else {
+      const _flattenedPoints = points
+        .concat(mousePos)
+        .reduce((a, b) => a.concat(b), []);
+      polygon = {
+        ...polygon,
+        flattenedPoints: _flattenedPoints,
+      };
+    }
+    copy[activePolygonIndex] = polygon;
+    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
   };
 
   const handleMouseOverStartPoint = (
@@ -126,8 +143,9 @@ const Canvas = ({
       ...polygon,
       isMouseOverPoint: true,
     };
+    console.log('mouse over point', copy, polygon);
     copy[polygonKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdate: true }));
+    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
   };
 
   const handleMouseOutStartPoint = (
@@ -142,7 +160,7 @@ const Canvas = ({
       isMouseOverPoint: false,
     };
     copy[polygonKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdate: true }));
+    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
   };
 
   const handlePointDragMove = (
@@ -180,7 +198,7 @@ const Canvas = ({
       flattenedPoints,
     };
     copy[polygonKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdate: false }));
+    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
   };
 
   const handlePointDragEnd = (
@@ -204,7 +222,7 @@ const Canvas = ({
       flattenedPoints,
     };
     copy[polygonKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdate: true }));
+    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
   };
 
   const handleGroupDragEnd = (
@@ -229,7 +247,7 @@ const Canvas = ({
         flattenedPoints: result.reduce((a, b) => a.concat(b), []),
       };
       copy[polygonKey] = polygon;
-      dispatch(setPolygons({ polygons: copy, shouldUpdate: true }));
+      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
     }
   };
 
@@ -238,7 +256,7 @@ const Canvas = ({
       width={size.width}
       height={size.height}
       onMouseMove={handleMouseMove}
-      onClick={handleMouseClick}
+      onMouseDown={handleMouseClick}
     >
       <Layer>
         <Image
@@ -250,7 +268,7 @@ const Canvas = ({
         />
         {polygons?.map((polygon, index) => (
           <Polygon
-            key={index}
+            key={polygon.id}
             isFinished={polygon.isFinished}
             points={polygon.points}
             flattenedPoints={polygon.flattenedPoints}

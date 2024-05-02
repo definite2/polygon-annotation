@@ -6,6 +6,7 @@ import { Vector2d } from 'konva/lib/types';
 import { minMax } from 'utils';
 import { PolygonProps } from './types';
 
+// default values
 const LineColor = '#00F1FF';
 const FillColor = 'rgb(140,30,255,0.5)';
 const VertexColor = '#FF019A';

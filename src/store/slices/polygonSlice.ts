@@ -1,6 +1,8 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
 export type Polygon = {
+  id: string;
   points: number[][];
   flattenedPoints: number[];
   isFinished: boolean;
@@ -10,13 +12,13 @@ export type Polygon = {
 export interface PolygonAnnotationState {
   polygons: Polygon[];
   activePolygonIndex: number;
-  position: number[]; //current mouse position
   shouldUpdateHistory?: boolean;
 }
 
 const initialState: PolygonAnnotationState = {
   polygons: [
     {
+      id: uuidv4(),
       points: [],
       flattenedPoints: [],
       isFinished: false,
@@ -24,7 +26,6 @@ const initialState: PolygonAnnotationState = {
     },
   ],
   activePolygonIndex: 0,
-  position: [0, 0],
   shouldUpdateHistory: false,
 };
 
@@ -36,23 +37,19 @@ const polygonSlice = createSlice({
       state,
       action: PayloadAction<{
         polygons: PolygonAnnotationState['polygons'];
-        shouldUpdate?: boolean;
+        shouldUpdateHistory?: boolean;
       }>
     ) => {
-      const { polygons, shouldUpdate = true } = action.payload;
+      const { polygons, shouldUpdateHistory = true } = action.payload;
       state.polygons = polygons;
-      state.shouldUpdateHistory = shouldUpdate;
+      state.shouldUpdateHistory = shouldUpdateHistory;
     },
     setActivePolygonIndex: (state, action) => {
       state.activePolygonIndex = action.payload;
     },
-    setMousePosition: (state, action) => {
-      state.position = action.payload;
-    },
   },
 });
 
-export const { setPolygons, setActivePolygonIndex, setMousePosition } =
-  polygonSlice.actions;
+export const { setPolygons, setActivePolygonIndex } = polygonSlice.actions;
 
 export default polygonSlice.reducer;

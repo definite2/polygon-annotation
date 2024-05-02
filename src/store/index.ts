@@ -7,7 +7,8 @@ export const store = configureStore({
     polygon: undoable(polygonReducer, {
       filter: function filterActions(action) {
         return (
-          action.type === 'polygon/setPolygons' && action.payload.shouldUpdate
+          action.type === 'polygon/setPolygons' &&
+          action.payload.shouldUpdateHistory
         );
       },
     }),
