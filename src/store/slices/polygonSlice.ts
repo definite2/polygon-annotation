@@ -6,7 +6,6 @@ export type Polygon = {
   points: number[][];
   flattenedPoints: number[];
   isFinished: boolean;
-  isMouseOverPoint: boolean;
 };
 
 export interface PolygonAnnotationState {
@@ -22,7 +21,6 @@ const initialState: PolygonAnnotationState = {
       points: [],
       flattenedPoints: [],
       isFinished: false,
-      isMouseOverPoint: false,
     },
   ],
   activePolygonIndex: 0,
