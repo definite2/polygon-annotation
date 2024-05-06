@@ -11,6 +11,7 @@ const LineColor = '#00F1FF';
 const FillColor = 'rgb(140,30,255,0.5)';
 const VertexColor = '#FF019A';
 const VertexRadius = 6;
+const VertexStrokeWidth = 2;
 
 const Polygon = ({
   points,
@@ -21,6 +22,7 @@ const Polygon = ({
     lineColor: LineColor,
     fillColor: FillColor,
     vertexColor: VertexColor,
+    vertexStrokeWidth: VertexStrokeWidth,
   },
   handlePointDragEnd,
   handleGroupDragEnd,
@@ -28,12 +30,8 @@ const Polygon = ({
   handleMouseOutStartPoint,
   handlePointDragMove,
 }: PolygonProps) => {
-  const {
-    vertexRadius = VertexRadius,
-    lineColor,
-    fillColor,
-    vertexColor,
-  } = polygonStyle;
+  const { vertexRadius, lineColor, fillColor, vertexColor, vertexStrokeWidth } =
+    polygonStyle;
   const [stageObject, setStageObject] = useState<Konva.Stage | null>(null);
   const [minMaxX, setMinMaxX] = useState([0, 0]); //min and max in x axis
   const [minMaxY, setMinMaxY] = useState([0, 0]); //min and max in y axis
@@ -75,10 +73,10 @@ const Polygon = ({
     if (!stageObject) return { x, y };
     const sw = stageObject.width();
     const sh = stageObject.height();
-    if (x + vertexRadius > sw) x = sw - vertexRadius;
-    if (x - vertexRadius < 0) x = vertexRadius;
-    if (y + vertexRadius > sh) y = sh - vertexRadius;
-    if (y - vertexRadius < 0) y = vertexRadius;
+    if (x > sw) x = sw;
+    if (x < 0) x = 0;
+    if (y > sh) y = sh;
+    if (y < 0) y = 0;
     return { x, y };
   };
 
@@ -101,12 +99,11 @@ const Polygon = ({
         fill={fillColor}
       />
       {points.map((point, index) => {
-        const x = point[0] - vertexRadius / 2;
-        const y = point[1] - vertexRadius / 2;
+        const x = point[0];
+        const y = point[1];
         const startPointAttr =
           index === 0
             ? {
-                hitStrokeWidth: 12,
                 onMouseOver: handleMouseOverStartPoint,
                 onMouseOut: handleMouseOutStartPoint,
               }
@@ -120,7 +117,7 @@ const Polygon = ({
             radius={vertexRadius}
             fill={vertexColor}
             stroke={lineColor}
-            strokeWidth={2}
+            strokeWidth={vertexStrokeWidth}
             draggable
             onDragMove={handlePointDragMove}
             onDragEnd={handlePointDragEnd}
