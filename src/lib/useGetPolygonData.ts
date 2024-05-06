@@ -10,13 +10,9 @@ export const useGetPolygonData = () => {
   const activePolygonIndex = useSelector(
     (state: RootState) => state.polygon.present.activePolygonIndex
   );
-  const position = useSelector(
-    (state: RootState) => state.polygon.present.position
-  );
 
   return {
     polygons,
     activePolygonIndex,
-    mousePosition: position,
   };
 };
