@@ -1,4 +1,10 @@
-import React, { useMemo, useState, useEffect, ReactNode } from 'react';
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from 'react';
 import { useSelector, useDispatch, shallowEqual, Provider } from 'react-redux';
 import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
@@ -57,179 +63,186 @@ const Canvas = ({
       stage.getPointerPosition()?.y ?? 0,
     ];
   };
-  const handleMouseClick = (e: KonvaEventObject<MouseEvent>) => {
-    let activeKey = activePolygonIndex;
-    const copy = [...polygons];
-    // prevent adding new polygon if maxPolygons is reached
-    if (copy.filter((p) => p.isFinished).length === maxPolygons) return;
+  const handleMouseClick = useCallback(
+    (e: KonvaEventObject<MouseEvent>) => {
+      let activeKey = activePolygonIndex;
+      const copy = [...polygons];
+      // prevent adding new polygon if maxPolygons is reached
+      if (copy.filter((p) => p.isFinished).length === maxPolygons) return;
 
-    let polygon = copy[activeKey];
-    const { isFinished } = polygon;
-    // prevent adding new point on vertex if it is not mouse over
-    if (e.target.name() === 'vertex' && !isMouseOverPoint) {
-      return;
-    }
-    if (isFinished) {
-      // create new polygon
+      let polygon = copy[activeKey];
+      const { isFinished } = polygon;
+      // prevent adding new point on vertex if it is not mouse over
+      if (e.target.name() === 'vertex' && !isMouseOverPoint) {
+        return;
+      }
+      if (isFinished) {
+        // create new polygon
+        polygon = {
+          id: uuidv4(),
+          points: [],
+          flattenedPoints: [],
+          isFinished: false,
+        };
+        setIsMouseOverPoint(false);
+        activeKey += 1;
+        dispatch(setActivePolygonIndex(activeKey));
+      }
+      const { points } = polygon;
+      const stage = e.target.getStage();
+      const mousePos = getMousePos(stage);
+      if (isMouseOverPoint && points.length >= 3) {
+        polygon = {
+          ...polygon,
+          isFinished: true,
+        };
+      } else {
+        polygon = {
+          ...polygon,
+          points: [...points, mousePos],
+        };
+      }
+      copy[activeKey] = polygon;
+      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
+    },
+    [activePolygonIndex, dispatch, isMouseOverPoint, maxPolygons, polygons]
+  );
+
+  const handleMouseMove = useCallback(
+    (e: KonvaEventObject<MouseEvent>) => {
+      const stage = e.target.getStage();
+      if (!stage) {
+        return;
+      }
+      const mousePos = getMousePos(stage);
+      // // set flattened points for active polygon
+      const copy = [...polygons];
+      let polygon = copy[activePolygonIndex];
+      const { points, isFinished } = polygon;
+      if (isFinished) {
+        return;
+      }
+      const _flattenedPoints = points
+        .concat(mousePos)
+        .reduce((a, b) => a.concat(b), []);
       polygon = {
-        id: uuidv4(),
-        points: [],
-        flattenedPoints: [],
-        isFinished: false,
+        ...polygon,
+        flattenedPoints: _flattenedPoints,
       };
+      copy[activePolygonIndex] = polygon;
+      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
+    },
+    [activePolygonIndex, dispatch, polygons]
+  );
+
+  const handleMouseOverStartPoint = useCallback(
+    (e: KonvaEventObject<MouseEvent>, polygonKey: number) => {
+      const polygon = polygons[polygonKey];
+      const { points, isFinished } = polygon;
+      if (isFinished || points.length < 3) {
+        return;
+      }
+      e.target.scale({ x: 3, y: 3 });
+      setIsMouseOverPoint(true);
+    },
+    [polygons]
+  );
+
+  const handleMouseOutStartPoint = useCallback(
+    (e: KonvaEventObject<MouseEvent>) => {
+      e.target.scale({ x: 1, y: 1 });
       setIsMouseOverPoint(false);
-      activeKey += 1;
-      dispatch(setActivePolygonIndex(activeKey));
-    }
-    const { points } = polygon;
-    const stage = e.target.getStage();
-    const mousePos = getMousePos(stage);
-    if (isMouseOverPoint && points.length >= 3) {
+    },
+    []
+  );
+
+  const handlePointDragMove = useCallback(
+    (e: KonvaEventObject<DragEvent>, polygonKey: number) => {
+      const copy = [...polygons];
+      let polygon = copy[polygonKey];
+      const { isFinished } = polygon;
+      if (!isFinished) {
+        // prevent drag:
+        e.target.stopDrag();
+        return;
+      }
+      const stage = e.target.getStage();
+      const index = e.target.index - 1;
+      const pos = [e.target.x(), e.target.y()];
+      if (stage) {
+        if (pos[0] < 0) pos[0] = 0;
+        if (pos[1] < 0) pos[1] = 0;
+        if (pos[0] > stage.width()) pos[0] = stage.width();
+        if (pos[1] > stage.height()) pos[1] = stage.height();
+      }
+
+      const { points } = polygon;
+      const newPoints = [
+        ...points.slice(0, index),
+        pos,
+        ...points.slice(index + 1),
+      ];
+      const flattenedPoints = newPoints.reduce((a, b) => a.concat(b), []);
       polygon = {
         ...polygon,
-        isFinished: true,
+        points: newPoints,
+        flattenedPoints,
       };
-      console.log('polygon is finished', polygon);
-    } else {
+      copy[polygonKey] = polygon;
+      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
+    },
+    [dispatch, polygons]
+  );
+
+  const handlePointDragEnd = useCallback(
+    (e: KonvaEventObject<DragEvent>, polygonKey: number) => {
+      const index = e.target.index - 1;
+      const pos = [e.target.x(), e.target.y()];
+      const copy = [...polygons];
+      let polygon = copy[polygonKey];
+      const { points } = polygon;
+      const newPoints = [
+        ...points.slice(0, index),
+        pos,
+        ...points.slice(index + 1),
+      ];
+      const flattenedPoints = newPoints.reduce((a, b) => a.concat(b), []);
       polygon = {
         ...polygon,
-        points: [...points, mousePos],
-      };
-      console.log('polygon is not finished', polygon);
-    }
-    copy[activeKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
-  };
-
-  const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    const stage = e.target.getStage();
-    if (!stage) {
-      return;
-    }
-    const mousePos = getMousePos(stage);
-    // // set flattened points for active polygon
-    const copy = [...polygons];
-    let polygon = copy[activePolygonIndex];
-    const { points, isFinished } = polygon;
-    if (isFinished) {
-      return;
-    }
-    const _flattenedPoints = points
-      .concat(mousePos)
-      .reduce((a, b) => a.concat(b), []);
-    polygon = {
-      ...polygon,
-      flattenedPoints: _flattenedPoints,
-    };
-    copy[activePolygonIndex] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
-  };
-
-  const handleMouseOverStartPoint = (
-    e: KonvaEventObject<MouseEvent>,
-    polygonKey: number
-  ) => {
-    const polygon = polygons[polygonKey];
-    const { points, isFinished } = polygon;
-    if (isFinished || points.length < 3) {
-      return;
-    }
-    e.target.scale({ x: 3, y: 3 });
-    setIsMouseOverPoint(true);
-  };
-
-  const handleMouseOutStartPoint = (e: KonvaEventObject<MouseEvent>) => {
-    e.target.scale({ x: 1, y: 1 });
-    setIsMouseOverPoint(false);
-  };
-
-  const handlePointDragMove = (
-    e: KonvaEventObject<DragEvent>,
-    polygonKey: number
-  ) => {
-    const copy = [...polygons];
-    let polygon = copy[polygonKey];
-    const { isFinished } = polygon;
-    if (!isFinished) {
-      // prevent drag:
-      e.target.stopDrag();
-      return;
-    }
-    const stage = e.target.getStage();
-    const index = e.target.index - 1;
-    const pos = [e.target.x(), e.target.y()];
-    if (stage) {
-      if (pos[0] < 0) pos[0] = 0;
-      if (pos[1] < 0) pos[1] = 0;
-      if (pos[0] > stage.width()) pos[0] = stage.width();
-      if (pos[1] > stage.height()) pos[1] = stage.height();
-    }
-
-    const { points } = polygon;
-    const newPoints = [
-      ...points.slice(0, index),
-      pos,
-      ...points.slice(index + 1),
-    ];
-    const flattenedPoints = newPoints.reduce((a, b) => a.concat(b), []);
-    polygon = {
-      ...polygon,
-      points: newPoints,
-      flattenedPoints,
-    };
-    copy[polygonKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
-  };
-
-  const handlePointDragEnd = (
-    e: KonvaEventObject<DragEvent>,
-    polygonKey: number
-  ) => {
-    const index = e.target.index - 1;
-    const pos = [e.target.x(), e.target.y()];
-    const copy = [...polygons];
-    let polygon = copy[polygonKey];
-    const { points } = polygon;
-    const newPoints = [
-      ...points.slice(0, index),
-      pos,
-      ...points.slice(index + 1),
-    ];
-    const flattenedPoints = newPoints.reduce((a, b) => a.concat(b), []);
-    polygon = {
-      ...polygon,
-      points: newPoints,
-      flattenedPoints,
-    };
-    copy[polygonKey] = polygon;
-    dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
-  };
-
-  const handleGroupDragEnd = (
-    e: KonvaEventObject<DragEvent>,
-    polygonKey: number
-  ) => {
-    //drag end listens other children circles' drag end event
-    //...for this 'name' attr is added
-    const copy = [...polygons];
-    let polygon = copy[polygonKey];
-    const { points } = polygon;
-    if (e.target.name() === 'polygon') {
-      const result: number[][] = [];
-      const copyPoints = [...points];
-      copyPoints.forEach((point) =>
-        result.push([point[0] + e.target.x(), point[1] + e.target.y()])
-      );
-      e.target.position({ x: 0, y: 0 }); //reset group position
-      polygon = {
-        ...polygon,
-        points: result,
-        flattenedPoints: result.reduce((a, b) => a.concat(b), []),
+        points: newPoints,
+        flattenedPoints,
       };
       copy[polygonKey] = polygon;
       dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
-    }
-  };
+    },
+    [dispatch, polygons]
+  );
+
+  const handleGroupDragEnd = useCallback(
+    (e: KonvaEventObject<DragEvent>, polygonKey: number) => {
+      //drag end listens other children circles' drag end event
+      //...for this 'name' attr is added
+      const copy = [...polygons];
+      let polygon = copy[polygonKey];
+      const { points } = polygon;
+      if (e.target.name() === 'polygon') {
+        const result: number[][] = [];
+        const copyPoints = [...points];
+        copyPoints.forEach((point) =>
+          result.push([point[0] + e.target.x(), point[1] + e.target.y()])
+        );
+        e.target.position({ x: 0, y: 0 }); //reset group position
+        polygon = {
+          ...polygon,
+          points: result,
+          flattenedPoints: result.reduce((a, b) => a.concat(b), []),
+        };
+        copy[polygonKey] = polygon;
+        dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
+      }
+    },
+    [dispatch, polygons]
+  );
 
   return (
     <Stage

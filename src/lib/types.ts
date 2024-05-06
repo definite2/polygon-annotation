@@ -5,6 +5,7 @@ export type PolygonStyleProps = {
   fillColor?: string;
   vertexColor?: string;
   vertexRadius?: number;
+  vertexStrokeWidth?: number;
 };
 
 export type CanvasProps = {

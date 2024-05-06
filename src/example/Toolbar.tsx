@@ -66,13 +66,26 @@ const Toolbar = ({
         <input
           id="vertexRad"
           type="number"
-          placeholder="Enter polygon fill color"
+          placeholder="Enter a value"
           value={config.vertexRadius}
           onChange={(e) =>
             setConfig({ ...config, vertexRadius: +e.target.value })
           }
         />
       </div>
+      <div>
+        <label htmlFor="vertexStroke">Vertex Stroke Width: </label>
+        <input
+          id="vertexStroke"
+          type="number"
+          placeholder="Enter a value"
+          value={config.vertexStrokeWidth}
+          onChange={(e) =>
+            setConfig({ ...config, vertexStrokeWidth: +e.target.value })
+          }
+        />
+      </div>
+
       <div>
         <button onClick={undo} disabled={!canUndo}>
           Undo

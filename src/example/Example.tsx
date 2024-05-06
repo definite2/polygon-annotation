@@ -12,6 +12,7 @@ const AnnotationDraw = () => {
     lineColor: '#1ea703',
     fillColor: '#37f71139',
     vertexColor: '#ff0000',
+    vertexStrokeWidth: 2,
   });
   return (
     <PolygonAnnotation
