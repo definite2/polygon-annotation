@@ -1,13 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { Polygon } from 'lib/types';
 import { v4 as uuidv4 } from 'uuid';
-
-export type Polygon = {
-  id: string;
-  points: number[][];
-  flattenedPoints: number[];
-  isFinished: boolean;
-  label?: string;
-};
 
 export interface PolygonAnnotationState {
   polygons: Polygon[];
@@ -47,9 +40,19 @@ const polygonSlice = createSlice({
     setActivePolygonIndex: (state, action) => {
       state.activePolygonIndex = action.payload;
     },
+    updatePolygonLabel: (
+      state,
+      action: PayloadAction<{ id: Polygon['id']; label: Polygon['label'] }>
+    ) => {
+      const { id, label } = action.payload;
+      const activePoly = state.polygons.find((p) => p.id === id);
+      if (!activePoly) return;
+      activePoly.label = label;
+    },
   },
 });
 
-export const { setPolygons, setActivePolygonIndex } = polygonSlice.actions;
+export const { setPolygons, setActivePolygonIndex, updatePolygonLabel } =
+  polygonSlice.actions;
 
 export default polygonSlice.reducer;

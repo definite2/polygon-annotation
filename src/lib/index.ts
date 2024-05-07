@@ -1,4 +1,6 @@
-export type { Polygon } from 'store/slices/polygonSlice';
+export { useUndoRedo } from './useDrawHistory';
+export { useGetPolygons } from './useGetPolygons';
+export type { Polygon } from './types';
 export type {
   CanvasProps as PolygonAnnotationProps,
   PolygonStyleProps,

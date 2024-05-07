@@ -1,5 +1,13 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 
+export type Polygon = {
+  id: string;
+  points: number[][];
+  flattenedPoints: number[];
+  isFinished: boolean;
+  label?: string;
+};
+
 export type PolygonStyleProps = {
   lineColor?: string;
   fillColor?: string;
@@ -18,7 +26,11 @@ export type CanvasProps = {
     height: number;
   };
 };
-
+export type PolygonInputProps = {
+  id?: string;
+  label?: string;
+  points: number[][];
+};
 export type PolygonProps = {
   points: number[][];
   flattenedPoints: number[] | undefined;
