@@ -19,6 +19,7 @@ const Canvas = ({
   maxPolygons = 1,
   polygonStyle,
   imageSize,
+  showLabel = false,
 }: CanvasProps) => {
   const dispatch = useDispatch();
   const [image, setImage] = useState<HTMLImageElement>();
@@ -83,6 +84,7 @@ const Canvas = ({
           points: [],
           flattenedPoints: [],
           isFinished: false,
+          label: `Polygon ${copy.length + 1}`,
         };
         setIsMouseOverPoint(false);
         activeKey += 1;
@@ -273,6 +275,8 @@ const Canvas = ({
             handleMouseOutStartPoint={handleMouseOutStartPoint}
             handleGroupDragEnd={(e) => handleGroupDragEnd(e, index)}
             polygonStyle={polygonStyle}
+            showLabel={showLabel}
+            label={polygon.label}
           />
         ))}
       </Layer>
@@ -285,6 +289,7 @@ export const PolygonAnnotation = ({
   maxPolygons,
   polygonStyle,
   imageSize,
+  showLabel,
   children,
 }: {
   bgImage: string;
@@ -292,6 +297,7 @@ export const PolygonAnnotation = ({
   maxPolygons?: number;
   imageSize?: { width: number; height: number };
   polygonStyle?: PolygonStyleProps;
+  showLabel?: boolean;
 }) => {
   return (
     <Provider store={store}>
@@ -300,6 +306,7 @@ export const PolygonAnnotation = ({
         maxPolygons={maxPolygons}
         polygonStyle={polygonStyle}
         imageSize={imageSize}
+        showLabel={showLabel}
       />
       {children}
     </Provider>

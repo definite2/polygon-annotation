@@ -5,18 +5,32 @@ import { PolygonStyleProps } from 'lib';
 
 const Toolbar = ({
   maxPolygons,
+  showLabel,
   setMaxPolygons,
+  setShowLabel,
   config,
   setConfig,
 }: {
   maxPolygons: number;
   config: PolygonStyleProps;
-
+  showLabel: boolean;
   setMaxPolygons: (maxPolygons: number) => void;
   setConfig: (config: PolygonStyleProps) => void;
+  setShowLabel: (showLabel: boolean) => void;
 }) => {
   const { undo, redo, canUndo, canRedo } = useUndoRedo();
   const { polygons } = useGetPolygonData();
+  const exportData = () => {
+    const data = JSON.stringify(polygons);
+    const blob = new Blob([data], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'polygon-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="toolbar-wrapper">
       <div>
@@ -85,13 +99,26 @@ const Toolbar = ({
           }
         />
       </div>
-
+      <div>
+        <label htmlFor="showLabel">Show Labels: </label>
+        <input
+          id="showLabel"
+          type="checkbox"
+          checked={showLabel}
+          onChange={(e) => setShowLabel(e.target.checked)}
+        />
+      </div>
       <div>
         <button onClick={undo} disabled={!canUndo}>
           Undo
         </button>
         <button onClick={redo} disabled={!canRedo}>
           Redo
+        </button>
+      </div>
+      <div>
+        <button disabled={!polygons.length} onClick={exportData}>
+          Export Data
         </button>
       </div>
       <div>Points: </div>

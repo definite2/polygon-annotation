@@ -7,6 +7,7 @@ const videoSource = './space_landscape.jpg';
 
 const AnnotationDraw = () => {
   const [maxPolygons, setMaxPolygons] = useState<number>(1);
+  const [showLabel, setShowLabel] = useState<boolean>(false);
   const [polygonStyle, setPolygonStyle] = useState<PolygonStyleProps>({
     vertexRadius: 6,
     lineColor: '#1ea703',
@@ -19,12 +20,15 @@ const AnnotationDraw = () => {
       bgImage={videoSource}
       maxPolygons={maxPolygons}
       polygonStyle={polygonStyle}
+      showLabel={showLabel}
     >
       <Toolbar
         maxPolygons={maxPolygons}
         setMaxPolygons={setMaxPolygons}
         config={polygonStyle}
         setConfig={setPolygonStyle}
+        showLabel={showLabel}
+        setShowLabel={setShowLabel}
       />
     </PolygonAnnotation>
   );

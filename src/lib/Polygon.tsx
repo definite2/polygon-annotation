@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Konva from 'konva';
-import { Line, Circle, Group } from 'react-konva';
+import { Line, Circle, Group, Text, Transformer } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
-import { minMax } from 'utils';
+import { minMax, getMiddlePoint } from 'utils';
 import { PolygonProps } from './types';
 
 // default values
@@ -17,6 +17,8 @@ const Polygon = ({
   points,
   flattenedPoints,
   isFinished,
+  showLabel = false,
+  label = 'Polygon',
   polygonStyle = {
     vertexRadius: VertexRadius,
     lineColor: LineColor,
@@ -35,7 +37,9 @@ const Polygon = ({
   const [stageObject, setStageObject] = useState<Konva.Stage | null>(null);
   const [minMaxX, setMinMaxX] = useState([0, 0]); //min and max in x axis
   const [minMaxY, setMinMaxY] = useState([0, 0]); //min and max in y axis
+  const [showLabelInput, setShowLabelInput] = useState(false);
 
+  const textRef = React.useRef<Konva.Text>(null);
   const handleGroupMouseOver = (e: KonvaEventObject<MouseEvent>) => {
     const stage = e.target.getStage();
     if (!isFinished || !stage) return;
@@ -80,6 +84,16 @@ const Polygon = ({
     return { x, y };
   };
 
+  const handleShowLabelInput = (e: KonvaEventObject<MouseEvent>) => {
+    if (!e.target.name().startsWith('Text')) {
+      return;
+    }
+
+    console.log('text element', textRef.current);
+    // so position of textarea will be the sum of positions above:
+
+    setShowLabelInput(true);
+  };
   return (
     <Group
       name="polygon"
@@ -89,6 +103,7 @@ const Polygon = ({
       dragBoundFunc={groupDragBoundFunc}
       onMouseOver={handleGroupMouseOver}
       onMouseOut={handleGroupMouseOut}
+      onDblClick={handleShowLabelInput}
     >
       <Line
         name="line"
@@ -126,6 +141,25 @@ const Polygon = ({
           />
         );
       })}
+      {showLabel && isFinished && label && (
+        <Text
+          name={`Text-${label}`}
+          ref={textRef}
+          text={label}
+          fontSize={16}
+          x={getMiddlePoint(points).x}
+          y={getMiddlePoint(points).y}
+          fill="white"
+        />
+      )}
+      {showLabelInput && (
+        <Transformer
+          // @ts-ignore - Konva types are not up to date
+          node={textRef.current}
+          enabledAnchors={['']}
+          rotateEnabled={false}
+        />
+      )}
     </Group>
   );
 };

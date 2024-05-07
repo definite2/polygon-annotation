@@ -12,6 +12,7 @@ export type CanvasProps = {
   imageSource: string;
   maxPolygons?: number;
   polygonStyle?: PolygonStyleProps;
+  showLabel?: boolean;
   imageSize?: {
     width: number;
     height: number;
@@ -22,6 +23,8 @@ export type PolygonProps = {
   points: number[][];
   flattenedPoints: number[] | undefined;
   isFinished: boolean;
+  showLabel?: boolean;
+  label?: string;
   polygonStyle?: PolygonStyleProps;
   handlePointDragMove: (e: KonvaEventObject<DragEvent>) => void;
   handlePointDragEnd: (e: KonvaEventObject<DragEvent>) => void;
