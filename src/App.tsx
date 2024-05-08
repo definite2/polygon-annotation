@@ -1,6 +1,6 @@
 import './App.css';
 
-import AnnotationDraw from 'example/Example';
+import AnnotationDraw from '../demo/Example';
 
 function App() {
   return (

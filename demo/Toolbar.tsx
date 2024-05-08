@@ -1,4 +1,5 @@
-import { useUndoRedo, useGetPolygons, PolygonStyleProps } from 'lib';
+import React from 'react';
+import { useUndoRedo, useGetPolygons, PolygonStyleProps } from '../src/lib';
 import './Toolbar.css';
 
 const Toolbar = ({

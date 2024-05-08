@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { PolygonAnnotation, PolygonStyleProps } from 'lib';
-
+import React, { useState } from 'react';
+import { PolygonAnnotation, PolygonStyleProps } from '../src/lib';
 import Toolbar from './Toolbar';
 
 const videoSource = './space_landscape.jpg';

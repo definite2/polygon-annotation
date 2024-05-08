@@ -23,7 +23,6 @@ export default defineConfig((configEnv) => ({
   build: {
     lib: {
       entry: path.join('src', 'lib/index.ts'),
-
       name: 'polygon-annotation',
       formats: ['es', 'umd'],
       fileName: (format) => `polygon-annotation.${format}.js`,
