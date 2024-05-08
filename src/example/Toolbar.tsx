@@ -59,9 +59,7 @@ const Toolbar = ({
           type="color"
           placeholder="Enter polygon vertex color"
           value={config.vertexColor}
-          onChange={(e) =>
-            setConfig({ ...config, vertexColor: e.target.value })
-          }
+          onChange={(e) => setConfig({ ...config, vertexColor: e.target.value })}
         />
       </div>
       <div>
@@ -81,9 +79,7 @@ const Toolbar = ({
           type="number"
           placeholder="Enter a value"
           value={config.vertexRadius}
-          onChange={(e) =>
-            setConfig({ ...config, vertexRadius: +e.target.value })
-          }
+          onChange={(e) => setConfig({ ...config, vertexRadius: +e.target.value })}
         />
       </div>
       <div>
@@ -93,9 +89,7 @@ const Toolbar = ({
           type="number"
           placeholder="Enter a value"
           value={config.vertexStrokeWidth}
-          onChange={(e) =>
-            setConfig({ ...config, vertexStrokeWidth: +e.target.value })
-          }
+          onChange={(e) => setConfig({ ...config, vertexStrokeWidth: +e.target.value })}
         />
       </div>
       <div>

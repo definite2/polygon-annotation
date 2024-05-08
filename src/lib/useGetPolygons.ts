@@ -8,19 +8,18 @@ import { updatePolygonLabel } from 'store/slices/polygonSlice';
 export const useGetPolygons = () => {
   const dispatch = useDispatch();
   const updateLabel = useCallback(
-    (input: { id: string; label: string }) =>
-      dispatch(updatePolygonLabel(input)),
-    [dispatch]
+    (input: { id: string; label: string }) => dispatch(updatePolygonLabel(input)),
+    [dispatch],
   );
   const polygons = useSelector((state: RootState) =>
     state.polygon.present.polygons.map((polygon) => ({
       id: polygon.id,
       label: polygon.label,
       points: polygon.points,
-    }))
+    })),
   );
   const activePolygonIndex = useSelector(
-    (state: RootState) => state.polygon.present.activePolygonIndex
+    (state: RootState) => state.polygon.present.activePolygonIndex,
   );
 
   return {

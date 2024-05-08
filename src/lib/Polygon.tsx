@@ -32,8 +32,7 @@ const Polygon = ({
   handleMouseOutStartPoint,
   handlePointDragMove,
 }: PolygonProps) => {
-  const { vertexRadius, lineColor, fillColor, vertexColor, vertexStrokeWidth } =
-    polygonStyle;
+  const { vertexRadius, lineColor, fillColor, vertexColor, vertexStrokeWidth } = polygonStyle;
   const [stageObject, setStageObject] = useState<Konva.Stage | null>(null);
   const [minMaxX, setMinMaxX] = useState([0, 0]); //min and max in x axis
   const [minMaxY, setMinMaxY] = useState([0, 0]); //min and max in y axis

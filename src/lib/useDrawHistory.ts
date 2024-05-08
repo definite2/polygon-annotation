@@ -7,12 +7,8 @@ export const useUndoRedo = () => {
   const dispatch = useDispatch();
   const undo = useCallback(() => dispatch(ActionCreators.undo()), [dispatch]);
   const redo = useCallback(() => dispatch(ActionCreators.redo()), [dispatch]);
-  const canUndo = useSelector(
-    (state: RootState) => state.polygon.past.length > 0
-  );
-  const canRedo = useSelector(
-    (state: RootState) => state.polygon.future.length > 0
-  );
+  const canUndo = useSelector((state: RootState) => state.polygon.past.length > 0);
+  const canRedo = useSelector((state: RootState) => state.polygon.future.length > 0);
 
   return {
     undo,

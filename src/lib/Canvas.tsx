@@ -1,10 +1,4 @@
-import React, {
-  useMemo,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-} from 'react';
+import React, { useMemo, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useSelector, useDispatch, shallowEqual, Provider } from 'react-redux';
 import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
@@ -27,7 +21,7 @@ const Canvas = ({
   const [isMouseOverPoint, setIsMouseOverPoint] = useState(false);
   const { polygons, activePolygonIndex } = useSelector(
     (state: RootState) => state.polygon.present,
-    shallowEqual
+    shallowEqual,
   );
 
   const imageElement = useMemo(() => {
@@ -59,10 +53,7 @@ const Canvas = ({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getMousePos = (stage: any): number[] => {
-    return [
-      stage.getPointerPosition()?.x ?? 0,
-      stage.getPointerPosition()?.y ?? 0,
-    ];
+    return [stage.getPointerPosition()?.x ?? 0, stage.getPointerPosition()?.y ?? 0];
   };
   const handleMouseClick = useCallback(
     (e: KonvaEventObject<MouseEvent>) => {
@@ -107,7 +98,7 @@ const Canvas = ({
       copy[activeKey] = polygon;
       dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
     },
-    [activePolygonIndex, dispatch, isMouseOverPoint, maxPolygons, polygons]
+    [activePolygonIndex, dispatch, isMouseOverPoint, maxPolygons, polygons],
   );
 
   const handleMouseMove = useCallback(
@@ -124,9 +115,7 @@ const Canvas = ({
       if (isFinished) {
         return;
       }
-      const _flattenedPoints = points
-        .concat(mousePos)
-        .reduce((a, b) => a.concat(b), []);
+      const _flattenedPoints = points.concat(mousePos).reduce((a, b) => a.concat(b), []);
       polygon = {
         ...polygon,
         flattenedPoints: _flattenedPoints,
@@ -134,7 +123,7 @@ const Canvas = ({
       copy[activePolygonIndex] = polygon;
       dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
     },
-    [activePolygonIndex, dispatch, polygons]
+    [activePolygonIndex, dispatch, polygons],
   );
 
   const handleMouseOverStartPoint = useCallback(
@@ -147,16 +136,13 @@ const Canvas = ({
       e.target.scale({ x: 3, y: 3 });
       setIsMouseOverPoint(true);
     },
-    [polygons]
+    [polygons],
   );
 
-  const handleMouseOutStartPoint = useCallback(
-    (e: KonvaEventObject<MouseEvent>) => {
-      e.target.scale({ x: 1, y: 1 });
-      setIsMouseOverPoint(false);
-    },
-    []
-  );
+  const handleMouseOutStartPoint = useCallback((e: KonvaEventObject<MouseEvent>) => {
+    e.target.scale({ x: 1, y: 1 });
+    setIsMouseOverPoint(false);
+  }, []);
 
   const handlePointDragMove = useCallback(
     (e: KonvaEventObject<DragEvent>, polygonKey: number) => {
@@ -179,11 +165,7 @@ const Canvas = ({
       }
 
       const { points } = polygon;
-      const newPoints = [
-        ...points.slice(0, index),
-        pos,
-        ...points.slice(index + 1),
-      ];
+      const newPoints = [...points.slice(0, index), pos, ...points.slice(index + 1)];
       const flattenedPoints = newPoints.reduce((a, b) => a.concat(b), []);
       polygon = {
         ...polygon,
@@ -193,7 +175,7 @@ const Canvas = ({
       copy[polygonKey] = polygon;
       dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
     },
-    [dispatch, polygons]
+    [dispatch, polygons],
   );
 
   const handlePointDragEnd = useCallback(
@@ -203,11 +185,7 @@ const Canvas = ({
       const copy = [...polygons];
       let polygon = copy[polygonKey];
       const { points } = polygon;
-      const newPoints = [
-        ...points.slice(0, index),
-        pos,
-        ...points.slice(index + 1),
-      ];
+      const newPoints = [...points.slice(0, index), pos, ...points.slice(index + 1)];
       const flattenedPoints = newPoints.reduce((a, b) => a.concat(b), []);
       polygon = {
         ...polygon,
@@ -217,7 +195,7 @@ const Canvas = ({
       copy[polygonKey] = polygon;
       dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
     },
-    [dispatch, polygons]
+    [dispatch, polygons],
   );
 
   const handleGroupDragEnd = useCallback(
@@ -231,7 +209,7 @@ const Canvas = ({
         const result: number[][] = [];
         const copyPoints = [...points];
         copyPoints.forEach((point) =>
-          result.push([point[0] + e.target.x(), point[1] + e.target.y()])
+          result.push([point[0] + e.target.x(), point[1] + e.target.y()]),
         );
         e.target.position({ x: 0, y: 0 }); //reset group position
         polygon = {
@@ -243,7 +221,7 @@ const Canvas = ({
         dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
       }
     },
-    [dispatch, polygons]
+    [dispatch, polygons],
   );
 
   return (
@@ -254,13 +232,7 @@ const Canvas = ({
       onMouseDown={handleMouseClick}
     >
       <Layer>
-        <Image
-          image={image}
-          x={0}
-          y={0}
-          width={size.width}
-          height={size.height}
-        />
+        <Image image={image} x={0} y={0} width={size.width} height={size.height} />
         {polygons?.map((polygon, index) => (
           <Polygon
             key={polygon.id}
@@ -269,9 +241,7 @@ const Canvas = ({
             flattenedPoints={polygon.flattenedPoints}
             handlePointDragMove={(e) => handlePointDragMove(e, index)}
             handlePointDragEnd={(e) => handlePointDragEnd(e, index)}
-            handleMouseOverStartPoint={(e) =>
-              handleMouseOverStartPoint(e, index)
-            }
+            handleMouseOverStartPoint={(e) => handleMouseOverStartPoint(e, index)}
             handleMouseOutStartPoint={handleMouseOutStartPoint}
             handleGroupDragEnd={(e) => handleGroupDragEnd(e, index)}
             polygonStyle={polygonStyle}

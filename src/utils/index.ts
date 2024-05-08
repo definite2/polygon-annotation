@@ -5,7 +5,7 @@ export const minMax = (points: number[]) => {
       acc[1] = val > acc[1] ? val : acc[1];
       return acc;
     },
-    [Infinity, -Infinity]
+    [Infinity, -Infinity],
   );
 };
 

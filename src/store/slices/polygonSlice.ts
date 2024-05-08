@@ -31,7 +31,7 @@ const polygonSlice = createSlice({
       action: PayloadAction<{
         polygons: PolygonAnnotationState['polygons'];
         shouldUpdateHistory?: boolean;
-      }>
+      }>,
     ) => {
       const { polygons, shouldUpdateHistory = true } = action.payload;
       state.polygons = polygons;
@@ -42,7 +42,7 @@ const polygonSlice = createSlice({
     },
     updatePolygonLabel: (
       state,
-      action: PayloadAction<{ id: Polygon['id']; label: Polygon['label'] }>
+      action: PayloadAction<{ id: Polygon['id']; label: Polygon['label'] }>,
     ) => {
       const { id, label } = action.payload;
       const activePoly = state.polygons.find((p) => p.id === id);
@@ -52,7 +52,6 @@ const polygonSlice = createSlice({
   },
 });
 
-export const { setPolygons, setActivePolygonIndex, updatePolygonLabel } =
-  polygonSlice.actions;
+export const { setPolygons, setActivePolygonIndex, updatePolygonLabel } = polygonSlice.actions;
 
 export default polygonSlice.reducer;
