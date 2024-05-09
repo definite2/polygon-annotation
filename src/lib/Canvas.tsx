@@ -4,9 +4,10 @@ import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { v4 as uuidv4 } from 'uuid';
 import { setActivePolygonIndex, setPolygons } from 'store/slices/polygonSlice';
-import { RootState, store } from 'store';
+import { RootState, initStore } from 'store';
 import Polygon from './Polygon';
-import { CanvasProps, PolygonStyleProps } from './types';
+import { CanvasProps, PolygonStyleProps, PolygonInputProps } from './types';
+import { isPolygonClosed } from 'utils';
 
 const Canvas = ({
   imageSource,
@@ -60,7 +61,7 @@ const Canvas = ({
       let activeKey = activePolygonIndex;
       const copy = [...polygons];
       // prevent adding new polygon if maxPolygons is reached
-      if (copy.filter((p) => p.isFinished).length === maxPolygons) return;
+      if (copy.filter((p) => p.isFinished).length >= maxPolygons) return;
 
       let polygon = copy[activeKey];
       const { isFinished } = polygon;
@@ -257,6 +258,7 @@ const Canvas = ({
 export const PolygonAnnotation = ({
   bgImage,
   maxPolygons,
+  initialPolygons,
   polygonStyle,
   imageSize,
   showLabel,
@@ -268,7 +270,32 @@ export const PolygonAnnotation = ({
   imageSize?: { width: number; height: number };
   polygonStyle?: PolygonStyleProps;
   showLabel?: boolean;
+  initialPolygons?: PolygonInputProps[];
 }) => {
+  const store = useMemo(() => {
+    let _store = initStore([
+      {
+        id: uuidv4(),
+        points: [],
+        flattenedPoints: [],
+        isFinished: false,
+        label: 'Polygon 1',
+      },
+    ]);
+    if (initialPolygons?.length) {
+      const filteredPolygons = initialPolygons.filter((polygon) => isPolygonClosed(polygon.points));
+      const updatedPolygons = filteredPolygons.map((polygon, index) => ({
+        id: uuidv4(),
+        label: `Polygon ${index + 1}`,
+        isFinished: true,
+        flattenedPoints: polygon.points.reduce((a, b) => a.concat(b), []),
+        ...polygon,
+      }));
+      _store = updatedPolygons.length > 0 ? initStore(updatedPolygons) : _store;
+    }
+    return _store;
+  }, []);
+
   return (
     <Provider store={store}>
       <Canvas

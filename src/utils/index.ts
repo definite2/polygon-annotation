@@ -14,3 +14,10 @@ export const getMiddlePoint = (points: number[][]) => {
   const y = points.reduce((acc, val) => acc + val[1], 0) / points.length;
   return { x, y };
 };
+
+export const isPolygonClosed = (points: number[][]) => {
+  return points.length >= 3;
+  // const first = points[0];
+  // const last = points[points.length - 1];
+  // return first[0] === last[0] && first[1] === last[1];
+};

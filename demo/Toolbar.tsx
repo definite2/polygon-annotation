@@ -30,7 +30,7 @@ const Toolbar = ({
     a.click();
     URL.revokeObjectURL(url);
   };
-
+  console.log('Toolbar', polygons);
   return (
     <div className="toolbar-wrapper">
       <div>
