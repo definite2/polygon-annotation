@@ -10,21 +10,21 @@
   "scripts": {
     "dev": "vite --config vite.config.demo.ts",
     "build": "tsc && vite build",
-    "build:demo": "tsc && vite build --config vite.config.demo.ts --base /polygon-annotation/",
+    "build:demo": "tsc && vite build --config vite.config.demo.ts --base=./",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
     "format": "prettier --write src/**/*.{ts,tsx} --config ./.prettierrc",
-    "preview": "vite preview"
+    "preview": "vite preview --config vite.config.demo.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    "demo"
   ],
   "exports": {
     ".": {
       "import": "./dist/polygon-annotation.es.js",
       "require": "./dist/polygon-annotation.umd.js"
-    },
-    "./dist/style.css": "./dist/style.css"
+    }
   },
   "main": "./dist/polygon-annotation.umd.js",
   "module": "./dist/polygon-annotation.es.js",

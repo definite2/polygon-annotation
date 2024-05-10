@@ -6,14 +6,13 @@ export default defineConfig({
   plugins: [react()],
   root: resolve(__dirname, 'demo'),
   build: {
-    outDir: 'demo-build',
+    outDir: resolve(__dirname, 'demo-dist'),
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'demo/index.html'),
       },
     },
   },
-  mode: 'development',
   server: {
     port: 3001,
   },
