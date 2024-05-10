@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ActionCreators } from 'redux-undo';
-import { RootState } from 'store';
+import { RootState } from '../store';
 
 export const useUndoRedo = () => {
   const dispatch = useDispatch();

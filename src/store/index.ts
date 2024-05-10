@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import undoable from 'redux-undo';
-import type { Polygon } from 'lib/types';
+import type { Polygon } from '../lib/types';
 import polygonReducer from './slices/polygonSlice';
 
 export const initStore = (initialPolygons: Polygon[]) =>

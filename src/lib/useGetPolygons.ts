@@ -2,8 +2,8 @@
 
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store';
-import { updatePolygonLabel } from 'store/slices/polygonSlice';
+import { RootState } from '../store';
+import { updatePolygonLabel } from '../store/slices/polygonSlice';
 
 export const useGetPolygons = () => {
   const dispatch = useDispatch();

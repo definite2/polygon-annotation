@@ -8,8 +8,9 @@
   "license": "MIT",
   "repository": "definite2/polygon-annotation",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --config vite.config.demo.ts",
     "build": "tsc && vite build",
+    "build:demo": "tsc && vite build --config vite.config.demo.ts --base /polygon-annotation/",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
     "format": "prettier --write src/**/*.{ts,tsx} --config ./.prettierrc",

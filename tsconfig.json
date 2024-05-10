@@ -17,12 +17,12 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "declarationMap": true,
-    "baseUrl": "src",
+    "baseUrl": "./src",
     "paths": {
       "polygon-annotation": ["src/lib/index.ts"]
     },
     "typeRoots": ["node_modules/@types", "src/lib/index.d.ts"]
   },
-  "include": ["src"],
+  "include": ["./src", "./demo"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -3,11 +3,11 @@ import { useSelector, useDispatch, shallowEqual, Provider } from 'react-redux';
 import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { v4 as uuidv4 } from 'uuid';
-import { setActivePolygonIndex, setPolygons } from 'store/slices/polygonSlice';
-import { RootState, initStore } from 'store';
+import { setActivePolygonIndex, setPolygons } from '../store/slices/polygonSlice';
+import { RootState, initStore } from '../store';
 import Polygon from './Polygon';
 import { CanvasProps, PolygonStyleProps, PolygonInputProps } from './types';
-import { isPolygonClosed } from 'utils';
+import { isPolygonClosed } from '../utils';
 
 const Canvas = ({
   imageSource,
@@ -293,8 +293,9 @@ export const PolygonAnnotation = ({
       }));
       _store = updatedPolygons.length > 0 ? initStore(updatedPolygons) : _store;
     }
+    console.log('store init');
     return _store;
-  }, []);
+  }, [initialPolygons]);
 
   return (
     <Provider store={store}>

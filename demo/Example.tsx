@@ -46,22 +46,24 @@ const AnnotationDraw = () => {
   });
 
   return (
-    <PolygonAnnotation
-      bgImage={videoSource}
-      maxPolygons={maxPolygons}
-      polygonStyle={polygonStyle}
-      showLabel={showLabel}
-      initialPolygons={initialData}
-    >
-      <Toolbar
+    <div className="App">
+      <PolygonAnnotation
+        bgImage={videoSource}
         maxPolygons={maxPolygons}
-        setMaxPolygons={setMaxPolygons}
-        config={polygonStyle}
-        setConfig={setPolygonStyle}
+        polygonStyle={polygonStyle}
         showLabel={showLabel}
-        setShowLabel={setShowLabel}
-      />
-    </PolygonAnnotation>
+        initialPolygons={initialData}
+      >
+        <Toolbar
+          maxPolygons={maxPolygons}
+          setMaxPolygons={setMaxPolygons}
+          config={polygonStyle}
+          setConfig={setPolygonStyle}
+          showLabel={showLabel}
+          setShowLabel={setShowLabel}
+        />
+      </PolygonAnnotation>
+    </div>
   );
 };
 
