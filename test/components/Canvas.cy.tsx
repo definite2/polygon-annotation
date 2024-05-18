@@ -3,7 +3,7 @@ import { Canvas } from '../../src/lib/Canvas';
 import type { PolygonInputProps } from '../../src/lib/types';
 import yellow from '../assets/yellow.webp';
 
-describe('<PolygonAnnotation />', () => {
+describe('Canvas', () => {
   let _initialPolygons: PolygonInputProps[];
 
   beforeEach(() => {
