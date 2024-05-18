@@ -18,8 +18,7 @@
     "test:component": "cypress run --config video=false --component"
   },
   "files": [
-    "dist",
-    "demo"
+    "dist"
   ],
   "exports": {
     ".": {
