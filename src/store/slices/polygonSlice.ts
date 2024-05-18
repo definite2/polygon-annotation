@@ -49,9 +49,15 @@ export const polygonSlice = createSlice({
       if (!activePoly) return;
       activePoly.label = label;
     },
+    deleteAll: (state) => {
+      state.polygons = initialState.polygons;
+      state.activePolygonIndex = 0;
+      state.shouldUpdateHistory = false;
+    },
   },
 });
 
-export const { setPolygons, setActivePolygonIndex, updatePolygonLabel } = polygonSlice.actions;
+export const { setPolygons, setActivePolygonIndex, updatePolygonLabel, deleteAll } =
+  polygonSlice.actions;
 
 export default polygonSlice.reducer;

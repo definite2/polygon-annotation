@@ -4,6 +4,7 @@ import {
   updatePolygonLabel,
   setActivePolygonIndex,
   polygonSlice,
+  deleteAll,
 } from 'store/slices/polygonSlice';
 import { initStore } from 'store';
 
@@ -151,6 +152,41 @@ describe('polygonSlice', () => {
       });
       const newState = polygonSlice.reducer(initialState, action);
       expect(newState.polygons[0].label).toBe('Polygon 1');
+    });
+  });
+  describe('deleteAll', () => {
+    it('should delete all polygons and store should have default state', () => {
+      const store = initStore();
+      store.dispatch(
+        setPolygons({
+          polygons: [
+            {
+              id: '1',
+              points: [
+                [0, 10],
+                [10, 10],
+              ],
+              flattenedPoints: [],
+              isFinished: false,
+              label: 'new added',
+            },
+            {
+              id: '2',
+              points: [
+                [2, 40],
+                [34, 10],
+              ],
+              flattenedPoints: [],
+              isFinished: false,
+              label: 'new added 2',
+            },
+          ],
+          shouldUpdateHistory: false,
+        }),
+      );
+      store.dispatch(deleteAll());
+      const newState = store.getState();
+      expect(newState.polygon.present.polygons[0].label).not.toBe('new added');
     });
   });
 });

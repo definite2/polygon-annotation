@@ -18,7 +18,7 @@ const Toolbar = ({
   setShowLabel: (showLabel: boolean) => void;
 }) => {
   const { undo, redo, canUndo, canRedo } = useUndoRedo();
-  const { polygons, updateLabel } = useGetPolygons();
+  const { polygons, updateLabel, deletePolygons } = useGetPolygons();
 
   const exportData = () => {
     const data = JSON.stringify(polygons);
@@ -123,6 +123,9 @@ const Toolbar = ({
         </button>
         <button onClick={redo} disabled={!canRedo}>
           Redo
+        </button>
+        <button onClick={deletePolygons} disabled={!canUndo}>
+          Reset
         </button>
       </div>
       <div>
