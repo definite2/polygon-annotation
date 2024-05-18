@@ -22,7 +22,7 @@ const initialState: PolygonAnnotationState = {
   shouldUpdateHistory: false,
 };
 
-const polygonSlice = createSlice({
+export const polygonSlice = createSlice({
   name: 'polygon',
   initialState,
   reducers: {

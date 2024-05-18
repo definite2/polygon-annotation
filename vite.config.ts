@@ -37,4 +37,11 @@ export default defineConfig((configEnv) => ({
       },
     },
   },
+  test: {
+    deps: {
+      web: {
+        transformAssets: true,
+      },
+    },
+  },
 }));

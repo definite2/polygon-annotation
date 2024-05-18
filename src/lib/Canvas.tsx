@@ -7,9 +7,8 @@ import { setActivePolygonIndex, setPolygons } from '../store/slices/polygonSlice
 import { RootState, initStore } from '../store';
 import Polygon from './Polygon';
 import { CanvasProps, PolygonStyleProps, PolygonInputProps } from './types';
-import { isPolygonClosed } from '../utils';
 
-const Canvas = ({
+export const Canvas = ({
   imageSource,
   maxPolygons = 1,
   polygonStyle,
@@ -273,28 +272,7 @@ export const PolygonAnnotation = ({
   initialPolygons?: PolygonInputProps[];
 }) => {
   const store = useMemo(() => {
-    let _store = initStore([
-      {
-        id: uuidv4(),
-        points: [],
-        flattenedPoints: [],
-        isFinished: false,
-        label: 'Polygon 1',
-      },
-    ]);
-    if (initialPolygons?.length) {
-      const filteredPolygons = initialPolygons.filter((polygon) => isPolygonClosed(polygon.points));
-      const updatedPolygons = filteredPolygons.map((polygon, index) => ({
-        id: uuidv4(),
-        label: `Polygon ${index + 1}`,
-        isFinished: true,
-        flattenedPoints: polygon.points.reduce((a, b) => a.concat(b), []),
-        ...polygon,
-      }));
-      _store = updatedPolygons.length > 0 ? initStore(updatedPolygons) : _store;
-    }
-    console.log('store init');
-    return _store;
+    return initStore(initialPolygons);
   }, [initialPolygons]);
 
   return (

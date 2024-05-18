@@ -23,6 +23,6 @@
     },
     "typeRoots": ["node_modules/@types", "src/lib/index.d.ts"]
   },
-  "include": ["./src", "./demo"],
+  "include": ["./src", "./demo", "./test", "./cypress.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
