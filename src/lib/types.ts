@@ -1,4 +1,5 @@
 import { KonvaEventObject } from 'konva/lib/Node';
+import { StageProps } from 'react-konva';
 
 export type Polygon = {
   id: string;
@@ -17,7 +18,7 @@ export type PolygonStyleProps = {
 };
 
 export type CanvasProps = {
-  imageSource: string;
+  imageSource?: string;
   maxPolygons?: number;
   polygonStyle?: PolygonStyleProps;
   showLabel?: boolean;
@@ -25,6 +26,10 @@ export type CanvasProps = {
     width: number;
     height: number;
   };
+  className?: string;
+  onContextMenu?(evt: KonvaEventObject<PointerEvent>): void;
+  isLineMode?: boolean;
+  stageProps?: StageProps;
 };
 export type PolygonInputProps = {
   id?: string;
@@ -38,6 +43,7 @@ export type PolygonProps = {
   showLabel?: boolean;
   label?: string;
   polygonStyle?: PolygonStyleProps;
+  isLineMode: boolean;
   handlePointDragMove: (e: KonvaEventObject<DragEvent>) => void;
   handlePointDragEnd: (e: KonvaEventObject<DragEvent>) => void;
   handleGroupDragEnd: (e: KonvaEventObject<DragEvent>) => void;
