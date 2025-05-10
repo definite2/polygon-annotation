@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { updatePolygonLabel, deleteAll } from '../store/slices/polygonSlice';
+import { deleteAll, updatePolygonLabel } from '../store/slices/polygonSlice';
 
 export const useGetPolygons = () => {
   const dispatch = useDispatch();
@@ -17,6 +17,7 @@ export const useGetPolygons = () => {
       id: polygon.id,
       label: polygon.label,
       points: polygon.points,
+      isFinished: polygon.isFinished,
     })),
   );
   const activePolygonIndex = useSelector(
