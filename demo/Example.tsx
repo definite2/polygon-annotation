@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useRef, useState } from 'react';
 import { PolygonAnnotation, PolygonStyleProps } from '../src/lib';
 import Toolbar from './Toolbar';
 const initialData = [
@@ -45,24 +45,60 @@ const AnnotationDraw = () => {
     vertexStrokeWidth: 2,
   });
 
+  const [videoDimentions, setVideoDimentions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
   return (
     <div className="App">
-      <PolygonAnnotation
-        bgImage={videoSource}
-        maxPolygons={maxPolygons}
-        polygonStyle={polygonStyle}
-        showLabel={showLabel}
-        initialPolygons={initialData}
+      <video
+        ref={videoRef}
+        onLoadedData={() => {
+          const video = videoRef.current;
+          if (video) {
+            const videoOrginalWidth = video.videoWidth;
+            const videoOrginalheight = video.videoHeight;
+            const videoRect = video.getBoundingClientRect();
+            const computedWidth = videoRect.width;
+            const computedHeight = videoRect.height;
+            if (videoOrginalWidth && videoOrginalheight)
+              setVideoDimentions({
+                width: computedWidth,
+                height: computedHeight,
+              });
+          }
+        }}
+        className="demo-video"
+        autoPlay
+        muted
+        loop
       >
-        <Toolbar
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+        <track kind="captions" src="" label="No captions" default />
+        Your browser does not support the video tag.
+      </video>
+      {videoDimentions ? (
+        <PolygonAnnotation
+          // bgImage={videoSource}
+          imageSize={videoDimentions}
           maxPolygons={maxPolygons}
-          setMaxPolygons={setMaxPolygons}
-          config={polygonStyle}
-          setConfig={setPolygonStyle}
+          polygonStyle={polygonStyle}
           showLabel={showLabel}
-          setShowLabel={setShowLabel}
-        />
-      </PolygonAnnotation>
+          initialPolygons={initialData}
+          className="polygon-annotation"
+        >
+          <Toolbar
+            maxPolygons={maxPolygons}
+            setMaxPolygons={setMaxPolygons}
+            config={polygonStyle}
+            setConfig={setPolygonStyle}
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
+          />
+        </PolygonAnnotation>
+      ) : null}
     </div>
   );
 };

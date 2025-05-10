@@ -12,6 +12,7 @@
   -webkit-text-size-adjust: 100%;
 }
 .App {
+  position: relative;
   display: flex;
   justify-content: center;
   gap: 24px;
@@ -57,6 +58,14 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.demo-video {
+  width: 600px;
+  height: 330px;
+}
+.polygon-annotation {
+  position: absolute;
+  inset-inline-start: 0;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
