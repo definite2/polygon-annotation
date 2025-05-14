@@ -141,6 +141,7 @@ export const Canvas = ({
       // // set flattened points for active polygon
       const copy = [...polygons];
       let polygon = copy[activePolygonIndex];
+
       const { points, isFinished } = polygon;
       if (isFinished) {
         return;
@@ -159,6 +160,7 @@ export const Canvas = ({
   const handleMouseOverStartPoint = useCallback(
     (e: KonvaEventObject<MouseEvent>, polygonKey: number) => {
       const polygon = polygons[polygonKey];
+
       const { points, isFinished } = polygon;
       if (isFinished || points.length < 3) {
         return;

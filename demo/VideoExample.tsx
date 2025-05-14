@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { PolygonAnnotation, PolygonStyleProps } from '../src/lib';
 import Toolbar from './Toolbar';
+
 const initialData = [
   {
     id: 'd3ab238e-c2fd-4337-a397-3d813f575894',
@@ -32,9 +33,9 @@ const initialData = [
   },
 ];
 
-const videoSource = './space_landscape.jpg';
+const imageSource = './space_landscape.jpg';
 
-const AnnotationDraw = () => {
+const VideoExample = () => {
   const [maxPolygons, setMaxPolygons] = useState<number>(initialData.length || 1);
   const [showLabel, setShowLabel] = useState<boolean>(false);
   const [polygonStyle, setPolygonStyle] = useState<PolygonStyleProps>({
@@ -51,8 +52,9 @@ const AnnotationDraw = () => {
   } | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+
   return (
-    <div className="App">
+    <div className="video-example__container">
       <video
         ref={videoRef}
         onLoadedData={() => {
@@ -79,15 +81,16 @@ const AnnotationDraw = () => {
         <track kind="captions" src="" label="No captions" default />
         Your browser does not support the video tag.
       </video>
+
       {videoDimentions ? (
         <PolygonAnnotation
-          // bgImage={videoSource}
-          imageSize={videoDimentions}
+          // {...(isVideo ? { imageSize: videoDimentions } : { bgImage: imageSource })}
+          imageSize={videoDimentions} //rename to mediaSize
           maxPolygons={maxPolygons}
           polygonStyle={polygonStyle}
           showLabel={showLabel}
           initialPolygons={initialData}
-          className="polygon-annotation"
+          className={`video-example__polygon-annotation polygon-annotation`}
         >
           <Toolbar
             maxPolygons={maxPolygons}
@@ -103,4 +106,4 @@ const AnnotationDraw = () => {
   );
 };
 
-export default AnnotationDraw;
+export default VideoExample;
