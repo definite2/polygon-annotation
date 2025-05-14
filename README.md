@@ -28,8 +28,8 @@ This library is an ideal choice for those seeking to create their annotation wor
 - [x] Undo and Redo: Effortlessly manage your annotation history with built-in undo and redo functionality.
 - [x] Initial data: You can bring your own polygon data and use it as initial polygons.
 - [x] Edit label: updateLabel function allows you to edit label, it is just the function you can use your custom input elements.
+- [x] Polygon annotation on video (who wants to use it in a live cam, i.e. workplace safety AIs)
 - [ ] Delete: Delete selected polygon, or clear all data.
-- [ ] Polygon annotation on video (who wants to use it in a live cam, i.e. workplace safety AIs)
 
 ## Installation
 
@@ -45,15 +45,19 @@ yarn add polygon-annotation
 
 ## Props
 
-| Prop              | Type                                    | Description                                                                                                                                               | Default |
-| ----------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `bgImage`         | `string`                                | Image path.                                                                                                                                               | `''`    |
-| `maxPolygons`     | `number`                                | The maximum number of polygons allowed to be drawn.                                                                                                       | `1`     |
-| `imageSize`       | [ImageSize](#imageSize)                 | Width and height of the image (if it's not provided, it uses original width and height of the image).                                                     |         |
-| `polygonStyle`    | [PolygonStyle](#polygonstyle)           | Polygon style.                                                                                                                                            |         |
-| `showLabel`       | `boolean`                               | Boolean value that you can see the label                                                                                                                  |         |
-| `initialPolygons` | [PolygonInputProps](#polygonInputProps) | If you use another tool, like LabelMe, you can export the data and use here as initial data.                                                              |         |
-| `children`        | `ReactNode`                             | The PolygonAnnotation component is a provider component, you can access coordiantes(points) and undo/redo within child component. i.e. Toolbar component. | `<></>` |
+| Prop              | Type                                            | Description                                                                                                                                               | Default |
+| ----------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `bgImage`         | `string`                                        | Image path.                                                                                                                                               | `''`    |
+| `maxPolygons`     | `number`                                        | The maximum number of polygons allowed to be drawn.                                                                                                       | `1`     |
+| `imageSize`       | [ImageSize](#imageSize)                         | Width and height of the image (if it's not provided, it uses original width and height of the image).                                                     |         |
+| `polygonStyle`    | [PolygonStyle](#polygonstyle)                   | Polygon style.                                                                                                                                            |         |
+| `showLabel`       | `boolean`                                       | Boolean value that you can see the label                                                                                                                  |         |
+| `initialPolygons` | [PolygonInputProps](#polygonInputProps)         | If you use another tool, like LabelMe, you can export the data and use here as initial data.                                                              |         |
+| `children`        | `ReactNode`                                     | The PolygonAnnotation component is a provider component, you can access coordiantes(points) and undo/redo within child component. i.e. Toolbar component. | `<></>` |
+| `className`       | `string`                                        | Custom CSS class name for the PolygonAnnotation container.                                                                                                |         |
+| `onContextMenu`   | `(evt: KonvaEventObject<PointerEvent>) => void` | Callback for context menu events (right-click) on the annotation stage.                                                                                   |         |
+| `isLineMode`      | `boolean`                                       | Enable line drawing mode instead of polygon mode.                                                                                                         | `false` |
+| `stageProps`      | `StageProps`                                    | Additional props to pass to the underlying Konva Stage component.                                                                                         |         |
 
 ### ImageSize
 
