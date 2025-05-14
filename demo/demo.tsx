@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
-import VideoExample from './VideoExample';
 import './demo.css';
+import ImageExample from './ImageExample';
 import LineDrawExample from './LineDrawExample';
+import VideoExample from './VideoExample';
 
 ReactDOM.createRoot(document.getElementById('demo-root')!).render(
   <React.StrictMode>
@@ -21,7 +22,7 @@ ReactDOM.createRoot(document.getElementById('demo-root')!).render(
       <div className="App">
         <Routes>
           <Route path="/video" element={<VideoExample />} />
-          {/* <Route path="/image" element={<ImageExample />} /> */}
+          <Route path="/image" element={<ImageExample />} />
           <Route path="/line" element={<LineDrawExample />} />
           <Route path="*" element={<VideoExample />} />
         </Routes>

@@ -33,8 +33,6 @@ const initialData = [
   },
 ];
 
-const imageSource = './space_landscape.jpg';
-
 const VideoExample = () => {
   const [maxPolygons, setMaxPolygons] = useState<number>(initialData.length || 1);
   const [showLabel, setShowLabel] = useState<boolean>(false);
@@ -52,6 +50,8 @@ const VideoExample = () => {
   } | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const videoSource = 'https://www.w3schools.com/html/mov_bbb.mp4';
 
   return (
     <div className="video-example__container">
@@ -77,31 +77,27 @@ const VideoExample = () => {
         muted
         loop
       >
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+        <source src={videoSource} type="video/mp4" />
         <track kind="captions" src="" label="No captions" default />
         Your browser does not support the video tag.
       </video>
-
-      {videoDimentions ? (
-        <PolygonAnnotation
-          // {...(isVideo ? { imageSize: videoDimentions } : { bgImage: imageSource })}
-          imageSize={videoDimentions} //rename to mediaSize
+      <PolygonAnnotation
+        imageSize={videoDimentions || { width: 600, height: 300 }} //rename to mediaSize
+        maxPolygons={maxPolygons}
+        polygonStyle={polygonStyle}
+        showLabel={showLabel}
+        initialPolygons={initialData}
+        className={`video-example__polygon-annotation polygon-annotation`}
+      >
+        <Toolbar
           maxPolygons={maxPolygons}
-          polygonStyle={polygonStyle}
+          setMaxPolygons={setMaxPolygons}
+          config={polygonStyle}
+          setConfig={setPolygonStyle}
           showLabel={showLabel}
-          initialPolygons={initialData}
-          className={`video-example__polygon-annotation polygon-annotation`}
-        >
-          <Toolbar
-            maxPolygons={maxPolygons}
-            setMaxPolygons={setMaxPolygons}
-            config={polygonStyle}
-            setConfig={setPolygonStyle}
-            showLabel={showLabel}
-            setShowLabel={setShowLabel}
-          />
-        </PolygonAnnotation>
-      ) : null}
+          setShowLabel={setShowLabel}
+        />
+      </PolygonAnnotation>
     </div>
   );
 };

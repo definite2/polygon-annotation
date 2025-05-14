@@ -80,6 +80,10 @@ button:focus-visible {
   display: flex;
   gap: 1rem;
 }
+.video-example__polygon-annotation {
+  position: absolute;
+  inset-inline-start: 0;
+}
 
 :root {
   color: #213547;

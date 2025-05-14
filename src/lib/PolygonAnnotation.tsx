@@ -16,7 +16,7 @@ export const PolygonAnnotation = ({
   children,
   className,
   onContextMenu,
-  isLineMode,
+  isLineMode = false,
   stageProps,
 }: {
   bgImage?: string;
@@ -32,8 +32,8 @@ export const PolygonAnnotation = ({
   stageProps?: StageProps;
 }) => {
   const store = useMemo(() => {
-    return initStore(initialPolygons);
-  }, [initialPolygons]);
+    return initStore(initialPolygons, isLineMode);
+  }, [initialPolygons, isLineMode]);
 
   return (
     <Provider store={store}>

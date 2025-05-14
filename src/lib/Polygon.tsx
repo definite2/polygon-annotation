@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
 import Konva from 'konva';
-import { Line, Circle, Group, Text } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
-import { minMax, getMiddlePoint } from '../utils';
+import React, { useState } from 'react';
+import { Circle, Group, Line, Text } from 'react-konva';
+import { getMiddlePoint, minMax } from '../utils';
+import ArrowOnLine from './ArrowOnLine';
 import { PolygonProps } from './types';
 
 // default values

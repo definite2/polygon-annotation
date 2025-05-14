@@ -24,10 +24,10 @@ const resettableRootReducer = (state: RootState | undefined, action: AnyAction) 
 };
 
 // Export the store initialization function
-export const initStore = (initialPolygons?: PolygonInputProps[]) => {
+export const initStore = (initialPolygons?: PolygonInputProps[], isLineMode: boolean = false) => {
   const filteredPolygons = initialPolygons?.length
     ? initialPolygons
-        .filter((polygon) => isPolygonClosed(polygon.points))
+        .filter((polygon) => isPolygonClosed(polygon.points, isLineMode))
         .map((polygon, index) => ({
           id: uuidv4(),
           label: `Polygon ${index + 1}`,
@@ -36,7 +36,7 @@ export const initStore = (initialPolygons?: PolygonInputProps[]) => {
           ...polygon,
         }))
     : [];
-
+  // debugger;
   return configureStore({
     reducer: resettableRootReducer, // Use the resettable reducer
     preloadedState: initialPolygons && {
