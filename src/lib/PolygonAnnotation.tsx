@@ -1,11 +1,9 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import { StageProps } from 'react-konva';
-import { Provider } from 'react-redux';
-import { initStore } from '../store';
 import { Canvas } from './Canvas';
-import { PolygonInputProps, PolygonStyleProps } from './types';
 import { PolygonProvider } from './context/PolygonContext';
+import { PolygonInputProps, PolygonStyleProps } from './types';
 
 export const PolygonAnnotation = ({
   bgImage,
@@ -32,12 +30,8 @@ export const PolygonAnnotation = ({
   isLineMode?: boolean;
   stageProps?: StageProps;
 }) => {
-  const store = useMemo(() => {
-    return initStore(initialPolygons, isLineMode);
-  }, [initialPolygons, isLineMode]);
-
   return (
-    <PolygonProvider initialPolygons={initialPolygons}>
+    <PolygonProvider isLineMode={isLineMode} initialPolygons={initialPolygons}>
       <Canvas
         imageSource={bgImage}
         maxPolygons={maxPolygons}

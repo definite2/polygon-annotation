@@ -19,6 +19,7 @@ export const Canvas = ({
 }: CanvasProps) => {
   const { state, setPolygons, setActivePolygonIndex } = usePolygonContext();
   const { polygons, activePolygonIndex } = state.present;
+
   const [image, setImage] = useState<HTMLImageElement>();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [isMouseOverPoint, setIsMouseOverPoint] = useState(false);
@@ -144,7 +145,6 @@ export const Canvas = ({
       // // set flattened points for active polygon
       const copy = [...polygons];
       let polygon = copy[activePolygonIndex];
-
       const { points, isFinished } = polygon;
       if (isFinished) {
         return;

@@ -1,9 +1,7 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { useMemo } from 'react';
 import { Arrow } from 'react-konva';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store';
-import { setPolygons } from '../store/slices/polygonSlice';
+import { usePolygonContext } from './context/PolygonContext';
 
 interface ArrowOnLineProps {
   points: number[][];
@@ -15,8 +13,8 @@ interface ArrowOnLineProps {
 }
 
 const ArrowOnLine: React.FC<ArrowOnLineProps> = ({ points, polygonStyle }) => {
-  const dispatch = useDispatch();
-  const { polygons } = useSelector((state: RootState) => state.polygon.present, shallowEqual);
+  const { state, setPolygons } = usePolygonContext();
+  const { polygons } = state.present;
 
   // Use Arrow's component props type for proper typing
   const arrowProps = useMemo<React.ComponentProps<typeof Arrow> | null>(() => {
@@ -96,12 +94,8 @@ const ArrowOnLine: React.FC<ArrowOnLineProps> = ({ points, polygonStyle }) => {
           };
 
           // Dispatch the updated polygons
-          dispatch(
-            setPolygons({
-              polygons: updatedPolygons,
-              shouldUpdateHistory: true,
-            }),
-          );
+          const doUpdateHistory = true;
+          setPolygons(updatedPolygons, doUpdateHistory);
         }
       }
     };
@@ -115,7 +109,7 @@ const ArrowOnLine: React.FC<ArrowOnLineProps> = ({ points, polygonStyle }) => {
       strokeWidth: polygonStyle?.vertexStrokeWidth,
       onClick,
     };
-  }, [points, polygonStyle, dispatch, polygons]);
+  }, [points, polygonStyle, polygons, setPolygons]);
 
   if (!arrowProps) return null;
 
