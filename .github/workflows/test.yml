@@ -21,8 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Run component tests
-        run: npm run test:component
-        env:
-          # Add any environment variables needed for tests
-          CI: true 
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run build -- --skip-lint
+          start: npm run dev
+          browser: chrome
+          component: true 
