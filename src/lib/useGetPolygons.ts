@@ -1,4 +1,4 @@
-// react hook that returns polygons data:
+// react hook that returns polygons data
 
 import { useCallback } from 'react';
 import { usePolygonContext } from './context/PolygonContext';
