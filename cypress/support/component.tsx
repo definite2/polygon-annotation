@@ -1,10 +1,10 @@
 import './commands';
 import React from 'react';
-import { Provider } from 'react-redux';
-import { initStore } from '../../src/store';
-
-import { MountOptions, MountReturn, mount } from 'cypress/react18';
+import { mount } from 'cypress/react18';
+import { PolygonProvider } from '../../src/lib/context/PolygonContext';
 import { PolygonInputProps } from '../../src/lib/types';
+
+import { MountOptions, MountReturn } from 'cypress/react18';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -20,7 +20,6 @@ declare global {
 
 Cypress.Commands.add('mount', (component, options = {}) => {
   const { initialPolygons, ...mountOptions } = options;
-  const reduxStore = initStore(initialPolygons);
-  const wrapped = <Provider store={reduxStore}>{component}</Provider>;
+  const wrapped = <PolygonProvider initialPolygons={initialPolygons}>{component}</PolygonProvider>;
   return mount(wrapped, mountOptions);
 });

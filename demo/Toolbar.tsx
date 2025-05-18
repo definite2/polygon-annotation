@@ -1,5 +1,6 @@
 import React from 'react';
-import { useUndoRedo, useGetPolygons, PolygonStyleProps } from '../src/lib';
+import { usePolygonContext } from '../src/lib/context/PolygonContext';
+import { PolygonStyleProps } from '../src/lib/types';
 import './Toolbar.css';
 
 const Toolbar = ({
@@ -17,8 +18,8 @@ const Toolbar = ({
   setConfig: (config: PolygonStyleProps) => void;
   setShowLabel: (showLabel: boolean) => void;
 }) => {
-  const { undo, redo, canUndo, canRedo } = useUndoRedo();
-  const { polygons, updateLabel, deletePolygons } = useGetPolygons();
+  const { state, undo, redo, canUndo, canRedo, updatePolygonLabel, deleteAll } = usePolygonContext();
+  const { polygons } = state.present;
 
   const exportData = () => {
     const data = JSON.stringify(polygons);
@@ -112,7 +113,7 @@ const Toolbar = ({
               placeholder="Enter a value"
               value={p.label}
               onChange={(e) => {
-                updateLabel({ id: p.id, label: e.target.value });
+                updatePolygonLabel(p.id, e.target.value);
               }}
             />
           </div>
@@ -124,7 +125,7 @@ const Toolbar = ({
         <button onClick={redo} disabled={!canRedo}>
           Redo
         </button>
-        <button onClick={deletePolygons} disabled={!canUndo}>
+        <button onClick={deleteAll} disabled={!canUndo}>
           Reset
         </button>
       </div>
@@ -135,8 +136,8 @@ const Toolbar = ({
       </div>
       <div className="points-wrapper">
         {polygons.map((polygon) => (
-          <div key={polygon.id}>
-            <pre style={{ whiteSpace: 'pre-wrap' }}>
+          <div key={polygon.id} >
+            <pre style={{ whiteSpace: 'pre-wrap', backgroundColor:'transparent'}}>
               label:{JSON.stringify(polygon.label)}
               <br />
               points:{JSON.stringify(polygon.points)}

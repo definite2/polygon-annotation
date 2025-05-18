@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { initStore } from '../store';
 import { Canvas } from './Canvas';
 import { PolygonInputProps, PolygonStyleProps } from './types';
+import { PolygonProvider } from './context/PolygonContext';
 
 export const PolygonAnnotation = ({
   bgImage,
@@ -36,7 +37,7 @@ export const PolygonAnnotation = ({
   }, [initialPolygons, isLineMode]);
 
   return (
-    <Provider store={store}>
+    <PolygonProvider initialPolygons={initialPolygons}>
       <Canvas
         imageSource={bgImage}
         maxPolygons={maxPolygons}
@@ -49,6 +50,6 @@ export const PolygonAnnotation = ({
         stageProps={stageProps}
       />
       {children}
-    </Provider>
+    </PolygonProvider>
   );
 };
