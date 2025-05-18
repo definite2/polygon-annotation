@@ -1,6 +1,7 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { useMemo } from 'react';
 import { Arrow } from 'react-konva';
+import { calculateArrowFromPoints, findMatchingPolygonIndex, reversePolygonPoints } from '../utils';
 import { usePolygonContext } from './context/PolygonContext';
 
 interface ArrowOnLineProps {
@@ -16,92 +17,28 @@ const ArrowOnLine: React.FC<ArrowOnLineProps> = ({ points, polygonStyle }) => {
   const { state, setPolygons } = usePolygonContext();
   const { polygons } = state.present;
 
-  // Use Arrow's component props type for proper typing
   const arrowProps = useMemo<React.ComponentProps<typeof Arrow> | null>(() => {
-    if (points.length < 2) return null;
+    const line = calculateArrowFromPoints(points);
 
-    const [p1, p2] = points;
-    // Midpoint of the line segment
-    const midpoint: [number, number] = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+    if (!line) return null;
 
-    // Perpendicular vector
-    const perp: [number, number] = [-(p2[1] - p1[1]), p2[0] - p1[0]];
-    const arrowLength = 30;
-    const mag = Math.hypot(perp[0], perp[1]);
-    if (mag === 0) return null;
-
-    // Normalize to desired length
-    const norm: [number, number] = [(perp[0] / mag) * arrowLength, (perp[1] / mag) * arrowLength];
-
-    const endPoint: [number, number] = [midpoint[0] - norm[0], midpoint[1] - norm[1]];
+    const [midX, midY, endX, endY] = line;
 
     const onClick = (e: KonvaEventObject<MouseEvent>) => {
-      // Prevent event bubbling
       e.cancelBubble = true;
 
-      // Find the polygon index by comparing points
-      const lineIndex = polygons.findIndex((polygon) => {
-        // Only consider polygons with exactly 2 points (lines)
-        if (polygon.points.length !== 2) return false;
+      const index = findMatchingPolygonIndex(polygons, points[0], points[1]);
+      if (index === -1) return;
+      const updatedPolygons = [...polygons];
+      updatedPolygons[index] = reversePolygonPoints(updatedPolygons[index]);
 
-        // Check if the points match (in any order)
-        const [polyP1, polyP2] = polygon.points;
-
-        // Check if points match exactly
-        const exactMatch =
-          (polyP1[0] === p1[0] &&
-            polyP1[1] === p1[1] &&
-            polyP2[0] === p2[0] &&
-            polyP2[1] === p2[1]) ||
-          (polyP1[0] === p2[0] &&
-            polyP1[1] === p2[1] &&
-            polyP2[0] === p1[0] &&
-            polyP2[1] === p1[1]);
-
-        if (exactMatch) return true;
-
-        // If not exact match, check with small tolerance for floating point differences
-        const tolerance = 0.001;
-        const closeMatch =
-          (Math.abs(polyP1[0] - p1[0]) < tolerance &&
-            Math.abs(polyP1[1] - p1[1]) < tolerance &&
-            Math.abs(polyP2[0] - p2[0]) < tolerance &&
-            Math.abs(polyP2[1] - p2[1]) < tolerance) ||
-          (Math.abs(polyP1[0] - p2[0]) < tolerance &&
-            Math.abs(polyP1[1] - p2[1]) < tolerance &&
-            Math.abs(polyP2[0] - p1[0]) < tolerance &&
-            Math.abs(polyP2[1] - p1[1]) < tolerance);
-
-        return closeMatch;
-      });
-
-      if (lineIndex !== -1) {
-        // Create a copy of the polygons array
-        const updatedPolygons = [...polygons];
-
-        // Get the polygon at the found index
-        const polygon = updatedPolygons[lineIndex];
-
-        if (polygon && polygon.points.length === 2) {
-          // Reverse the points array
-          const reversedPoints = [...polygon.points].reverse();
-
-          // Update the polygon with reversed points
-          updatedPolygons[lineIndex] = {
-            ...polygon,
-            points: reversedPoints,
-            flattenedPoints: reversedPoints.reduce((a, b) => a.concat(b), []),
-          };
-
-          // Dispatch the updated polygons
-          const doUpdateHistory = true;
-          setPolygons(updatedPolygons, doUpdateHistory);
-        }
-      }
+      // Dispatch the updated polygons
+      const doUpdateHistory = true;
+      setPolygons(updatedPolygons, doUpdateHistory);
     };
 
     return {
-      points: [midpoint[0], midpoint[1], endPoint[0], endPoint[1]],
+      points: [midX, midY, endX, endY],
       pointerLength: 8,
       pointerWidth: 8,
       fill: polygonStyle?.fillColor,
