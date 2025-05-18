@@ -24,7 +24,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: npm run build -- --skip-lint
+          build: npm run build
           start: npm run dev
           browser: chrome
-          component: true 
+          component: true
+        env:
+          NODE_ENV: production 
