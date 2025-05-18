@@ -1,32 +1,25 @@
 // react hook that returns polygons data:
 
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { updatePolygonLabel, deleteAll } from '../store/slices/polygonSlice';
+import { usePolygonContext } from './context/PolygonContext';
 
 export const useGetPolygons = () => {
-  const dispatch = useDispatch();
+  const { state, updatePolygonLabel, deleteAll } = usePolygonContext();
+  const { polygons, activePolygonIndex } = state.present;
+
   const updateLabel = useCallback(
-    (input: { id: string; label: string }) => dispatch(updatePolygonLabel(input)),
-    [dispatch],
+    (input: { id: string; label: string }) => updatePolygonLabel(input.id, input.label),
+    [updatePolygonLabel]
   );
-  const deletePolygons = useCallback(() => dispatch(deleteAll()), [dispatch]);
-  const polygons = useSelector((state: RootState) =>
-    state.polygon.present.polygons.map((polygon) => ({
+
+  return {
+    polygons: polygons.map((polygon) => ({
       id: polygon.id,
       label: polygon.label,
       points: polygon.points,
     })),
-  );
-  const activePolygonIndex = useSelector(
-    (state: RootState) => state.polygon.present.activePolygonIndex,
-  );
-
-  return {
-    polygons,
     activePolygonIndex,
     updateLabel,
-    deletePolygons,
+    deletePolygons: deleteAll,
   };
 };

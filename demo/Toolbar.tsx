@@ -135,8 +135,8 @@ const Toolbar = ({
       </div>
       <div className="points-wrapper">
         {polygons.map((polygon) => (
-          <div key={polygon.id}>
-            <pre style={{ whiteSpace: 'pre-wrap' }}>
+          <div key={polygon.id} >
+            <pre style={{ whiteSpace: 'pre-wrap', backgroundColor:'transparent'}}>
               label:{JSON.stringify(polygon.label)}
               <br />
               points:{JSON.stringify(polygon.points)}

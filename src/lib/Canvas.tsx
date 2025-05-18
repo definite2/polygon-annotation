@@ -1,10 +1,8 @@
 import React, { useMemo, useState, useEffect, ReactNode, useCallback } from 'react';
-import { useSelector, useDispatch, shallowEqual, Provider } from 'react-redux';
 import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { v4 as uuidv4 } from 'uuid';
-import { setActivePolygonIndex, setPolygons } from '../store/slices/polygonSlice';
-import { RootState, initStore } from '../store';
+import { PolygonProvider, usePolygonContext } from './context/PolygonContext';
 import Polygon from './Polygon';
 import { CanvasProps, PolygonStyleProps, PolygonInputProps } from './types';
 
@@ -15,14 +13,11 @@ export const Canvas = ({
   imageSize,
   showLabel = false,
 }: CanvasProps) => {
-  const dispatch = useDispatch();
+  const { state, setPolygons, setActivePolygonIndex } = usePolygonContext();
+  const { polygons, activePolygonIndex } = state.present;
   const [image, setImage] = useState<HTMLImageElement>();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [isMouseOverPoint, setIsMouseOverPoint] = useState(false);
-  const { polygons, activePolygonIndex } = useSelector(
-    (state: RootState) => state.polygon.present,
-    shallowEqual,
-  );
 
   const imageElement = useMemo(() => {
     const element = new window.Image();
@@ -55,6 +50,7 @@ export const Canvas = ({
   const getMousePos = (stage: any): number[] => {
     return [stage.getPointerPosition()?.x ?? 0, stage.getPointerPosition()?.y ?? 0];
   };
+
   const handleMouseClick = useCallback(
     (e: KonvaEventObject<MouseEvent>) => {
       let activeKey = activePolygonIndex;
@@ -79,7 +75,7 @@ export const Canvas = ({
         };
         setIsMouseOverPoint(false);
         activeKey += 1;
-        dispatch(setActivePolygonIndex(activeKey));
+        setActivePolygonIndex(activeKey);
       }
       const { points } = polygon;
       const stage = e.target.getStage();
@@ -96,9 +92,9 @@ export const Canvas = ({
         };
       }
       copy[activeKey] = polygon;
-      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
+      setPolygons(copy, true);
     },
-    [activePolygonIndex, dispatch, isMouseOverPoint, maxPolygons, polygons],
+    [activePolygonIndex, setPolygons, setActivePolygonIndex, isMouseOverPoint, maxPolygons, polygons],
   );
 
   const handleMouseMove = useCallback(
@@ -121,9 +117,9 @@ export const Canvas = ({
         flattenedPoints: _flattenedPoints,
       };
       copy[activePolygonIndex] = polygon;
-      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
+      setPolygons(copy, false);
     },
-    [activePolygonIndex, dispatch, polygons],
+    [activePolygonIndex, setPolygons, polygons],
   );
 
   const handleMouseOverStartPoint = useCallback(
@@ -173,9 +169,9 @@ export const Canvas = ({
         flattenedPoints,
       };
       copy[polygonKey] = polygon;
-      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: false }));
+      setPolygons(copy, false);
     },
-    [dispatch, polygons],
+    [setPolygons, polygons],
   );
 
   const handlePointDragEnd = useCallback(
@@ -193,9 +189,9 @@ export const Canvas = ({
         flattenedPoints,
       };
       copy[polygonKey] = polygon;
-      dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
+      setPolygons(copy, true);
     },
-    [dispatch, polygons],
+    [setPolygons, polygons],
   );
 
   const handleGroupDragEnd = useCallback(
@@ -218,10 +214,10 @@ export const Canvas = ({
           flattenedPoints: result.reduce((a, b) => a.concat(b), []),
         };
         copy[polygonKey] = polygon;
-        dispatch(setPolygons({ polygons: copy, shouldUpdateHistory: true }));
+        setPolygons(copy, true);
       }
     },
-    [dispatch, polygons],
+    [setPolygons, polygons],
   );
 
   return (
@@ -271,12 +267,8 @@ export const PolygonAnnotation = ({
   showLabel?: boolean;
   initialPolygons?: PolygonInputProps[];
 }) => {
-  const store = useMemo(() => {
-    return initStore(initialPolygons);
-  }, [initialPolygons]);
-
   return (
-    <Provider store={store}>
+    <PolygonProvider initialPolygons={initialPolygons}>
       <Canvas
         imageSource={bgImage}
         maxPolygons={maxPolygons}
@@ -285,6 +277,6 @@ export const PolygonAnnotation = ({
         showLabel={showLabel}
       />
       {children}
-    </Provider>
+    </PolygonProvider>
   );
 };

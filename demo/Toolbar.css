@@ -21,5 +21,6 @@
 }
 .points-wrapper > div {
   width: 100%;
-  background-color: aliceblue;
+  background-color: inherit;
+  border-color: aliceblue gray;
 }
