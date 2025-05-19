@@ -9,7 +9,7 @@ export const useGetPolygons = () => {
 
   const updateLabel = useCallback(
     (input: { id: string; label: string }) => updatePolygonLabel(input.id, input.label),
-    [updatePolygonLabel]
+    [updatePolygonLabel],
   );
 
   return {
@@ -17,6 +17,7 @@ export const useGetPolygons = () => {
       id: polygon.id,
       label: polygon.label,
       points: polygon.points,
+      isFinished: polygon.isFinished,
     })),
     activePolygonIndex,
     updateLabel,

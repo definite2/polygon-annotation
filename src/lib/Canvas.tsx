@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useEffect, ReactNode, useCallback } from 'react';
-import { Layer, Image, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Image, Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
-import { PolygonProvider, usePolygonContext } from './context/PolygonContext';
+import { usePolygonContext } from './context/PolygonContext';
 import Polygon from './Polygon';
-import { CanvasProps, PolygonStyleProps, PolygonInputProps } from './types';
+import { CanvasProps } from './types';
 
 export const Canvas = ({
   imageSource,
@@ -12,20 +12,35 @@ export const Canvas = ({
   polygonStyle,
   imageSize,
   showLabel = false,
+  className,
+  onContextMenu,
+  isLineMode = false,
+  stageProps,
 }: CanvasProps) => {
   const { state, setPolygons, setActivePolygonIndex } = usePolygonContext();
   const { polygons, activePolygonIndex } = state.present;
+
   const [image, setImage] = useState<HTMLImageElement>();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [isMouseOverPoint, setIsMouseOverPoint] = useState(false);
 
   const imageElement = useMemo(() => {
+    if (!imageSource) return null;
     const element = new window.Image();
     element.src = imageSource;
     return element;
   }, [imageSource]);
 
   useEffect(() => {
+    if (imageSize?.width && imageSize?.height)
+      setSize({
+        width: imageSize.width,
+        height: imageSize.height,
+      });
+  }, [imageSize?.height, imageSize?.width]);
+
+  useEffect(() => {
+    if (!imageElement) return;
     const onload = function () {
       if (imageSize?.width && imageSize?.height) {
         setSize({
@@ -46,24 +61,29 @@ export const Canvas = ({
     };
   }, [imageElement, imageSize?.height, imageSize?.width]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getMousePos = (stage: any): number[] => {
     return [stage.getPointerPosition()?.x ?? 0, stage.getPointerPosition()?.y ?? 0];
   };
 
   const handleMouseClick = useCallback(
     (e: KonvaEventObject<MouseEvent>) => {
+      // Prevent function execution on right-click (button 2)
+      if (e.evt.button === 2) return;
+
       let activeKey = activePolygonIndex;
       const copy = [...polygons];
+
       // prevent adding new polygon if maxPolygons is reached
       if (copy.filter((p) => p.isFinished).length >= maxPolygons) return;
 
       let polygon = copy[activeKey];
       const { isFinished } = polygon;
+
       // prevent adding new point on vertex if it is not mouse over
       if (e.target.name() === 'vertex' && !isMouseOverPoint) {
         return;
       }
+
       if (isFinished) {
         // create new polygon
         polygon = {
@@ -80,6 +100,7 @@ export const Canvas = ({
       const { points } = polygon;
       const stage = e.target.getStage();
       const mousePos = getMousePos(stage);
+
       if (isMouseOverPoint && points.length >= 3) {
         polygon = {
           ...polygon,
@@ -91,10 +112,27 @@ export const Canvas = ({
           points: [...points, mousePos],
         };
       }
+
+      if (isLineMode && points.length >= 1) {
+        polygon = {
+          ...polygon,
+          points: [...points, mousePos],
+          isFinished: true,
+        };
+      }
+
       copy[activeKey] = polygon;
       setPolygons(copy, true);
     },
-    [activePolygonIndex, setPolygons, setActivePolygonIndex, isMouseOverPoint, maxPolygons, polygons],
+    [
+      activePolygonIndex,
+      setPolygons,
+      setActivePolygonIndex,
+      isMouseOverPoint,
+      maxPolygons,
+      polygons,
+      isLineMode,
+    ],
   );
 
   const handleMouseMove = useCallback(
@@ -125,6 +163,7 @@ export const Canvas = ({
   const handleMouseOverStartPoint = useCallback(
     (e: KonvaEventObject<MouseEvent>, polygonKey: number) => {
       const polygon = polygons[polygonKey];
+
       const { points, isFinished } = polygon;
       if (isFinished || points.length < 3) {
         return;
@@ -226,14 +265,18 @@ export const Canvas = ({
       height={size.height}
       onMouseMove={handleMouseMove}
       onMouseDown={handleMouseClick}
+      className={className}
+      onContextMenu={onContextMenu}
+      {...stageProps}
     >
       <Layer>
-        <Image image={image} x={0} y={0} width={size.width} height={size.height} />
+        {image ? <Image image={image} x={0} y={0} width={size.width} height={size.height} /> : null}
         {polygons?.map((polygon, index) => (
           <Polygon
             key={polygon.id}
             isFinished={polygon.isFinished}
             points={polygon.points}
+            isLineMode={isLineMode}
             flattenedPoints={polygon.flattenedPoints}
             handlePointDragMove={(e) => handlePointDragMove(e, index)}
             handlePointDragEnd={(e) => handlePointDragEnd(e, index)}
@@ -247,36 +290,5 @@ export const Canvas = ({
         ))}
       </Layer>
     </Stage>
-  );
-};
-
-export const PolygonAnnotation = ({
-  bgImage,
-  maxPolygons,
-  initialPolygons,
-  polygonStyle,
-  imageSize,
-  showLabel,
-  children,
-}: {
-  bgImage: string;
-  children?: ReactNode;
-  maxPolygons?: number;
-  imageSize?: { width: number; height: number };
-  polygonStyle?: PolygonStyleProps;
-  showLabel?: boolean;
-  initialPolygons?: PolygonInputProps[];
-}) => {
-  return (
-    <PolygonProvider initialPolygons={initialPolygons}>
-      <Canvas
-        imageSource={bgImage}
-        maxPolygons={maxPolygons}
-        polygonStyle={polygonStyle}
-        imageSize={imageSize}
-        showLabel={showLabel}
-      />
-      {children}
-    </PolygonProvider>
   );
 };
