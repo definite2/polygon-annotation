@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useContext, useReducer } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useMemo, useReducer } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { isPolygonClosed } from '../../utils';
 import { Polygon, PolygonInputProps } from '../types';
@@ -170,23 +170,29 @@ export function PolygonProvider({
 
   const undo = useCallback(() => {
     dispatch({ type: 'UNDO' });
-  }, []);
+    return state.past.at(-1);
+  }, [state]);
 
   const redo = useCallback(() => {
     dispatch({ type: 'REDO' });
-  }, []);
+    return state.future.at(-1);
+  }, [state]);
 
-  const value = {
-    state,
-    setPolygons,
-    setActivePolygonIndex,
-    updatePolygonLabel,
-    deleteAll,
-    undo,
-    redo,
-    canUndo: state.past.length > 0,
-    canRedo: state.future.length > 0,
-  };
+  const value = useMemo(
+    // Saving renders where PolygonProvider reruns without the state or any of callbacks actually changing
+    () => ({
+      state,
+      setPolygons,
+      setActivePolygonIndex,
+      updatePolygonLabel,
+      deleteAll,
+      undo,
+      redo,
+      canUndo: state.past.length > 0,
+      canRedo: state.future.length > 0,
+    }),
+    [state, setPolygons, setActivePolygonIndex, updatePolygonLabel, deleteAll, undo, redo],
+  );
 
   return <PolygonContext.Provider value={value}>{children}</PolygonContext.Provider>;
 }
