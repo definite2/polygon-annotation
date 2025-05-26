@@ -1,6 +1,6 @@
 {
   "name": "polygon-annotation",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "type": "commonjs",
   "description": "",
   "author": "Defne E. <edefne878@gmail.com> (https://github.com/definite2)",
@@ -17,9 +17,7 @@
     "test": "vitest",
     "test:component": "cypress run --config video=false --component"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "exports": {
     ".": {
       "import": "./dist/polygon-annotation.es.js",
