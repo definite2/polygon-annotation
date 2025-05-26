@@ -29,7 +29,7 @@ This library is an ideal choice for those seeking to create their annotation wor
 - [x] Initial data: You can bring your own polygon data and use it as initial polygons.
 - [x] Edit label: updateLabel function allows you to edit label, it is just the function you can use your custom input elements.
 - [x] Polygon annotation on video (who wants to use it in a live cam, i.e. workplace safety AIs)
-- [ ] Delete: Delete selected polygon, or clear all data.
+- [x] Delete: Delete selected polygon, or clear all data.
 
 ## Installation
 
