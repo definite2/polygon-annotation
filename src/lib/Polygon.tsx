@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
 import Konva from 'konva';
-import { Line, Circle, Group, Text } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
-import { minMax, getMiddlePoint } from '../utils';
+import React, { useState } from 'react';
+import { Circle, Group, Line, Text } from 'react-konva';
+import { getMiddlePoint, minMax } from '../utils';
+import ArrowOnLine from './ArrowOnLine';
 import { PolygonProps } from './types';
 
 // default values
@@ -17,6 +18,7 @@ const Polygon = ({
   points,
   flattenedPoints,
   isFinished,
+  isLineMode = false,
   showLabel = false,
   label = 'Polygon',
   polygonStyle = {
@@ -81,7 +83,6 @@ const Polygon = ({
     if (y < 0) y = 0;
     return { x, y };
   };
-
   return (
     <Group
       name="polygon"
@@ -128,18 +129,20 @@ const Polygon = ({
           />
         );
       })}
+      {/* Render arrow when in line mode */}
+      {isLineMode && points.length >= 2 && (
+        <ArrowOnLine points={points} polygonStyle={polygonStyle} />
+      )}
       {showLabel && isFinished && label && (
-        <>
-          <Text
-            name={`Text-${label}`}
-            ref={textRef}
-            text={label}
-            fontSize={16}
-            x={getMiddlePoint(points).x}
-            y={getMiddlePoint(points).y}
-            fill="white"
-          />
-        </>
+        <Text
+          name={`Text-${label}`}
+          ref={textRef}
+          text={label}
+          fontSize={16}
+          x={getMiddlePoint(points).x}
+          y={getMiddlePoint(points).y}
+          fill="white"
+        />
       )}
     </Group>
   );

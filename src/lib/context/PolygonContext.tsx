@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useMemo, useReducer } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Polygon, PolygonInputProps } from '../types';
 import { isPolygonClosed } from '../../utils';
+import { Polygon, PolygonInputProps } from '../types';
 
 interface PolygonState {
   past: PolygonState[];
@@ -84,7 +84,7 @@ function polygonReducer(state: PolygonState, action: Action): PolygonState {
     case 'UPDATE_POLYGON_LABEL': {
       const { id, label } = action.payload;
       const polygons = state.present.polygons.map((polygon) =>
-        polygon.id === id ? { ...polygon, label } : polygon
+        polygon.id === id ? { ...polygon, label } : polygon,
       );
       return {
         ...state,
@@ -125,15 +125,23 @@ function polygonReducer(state: PolygonState, action: Action): PolygonState {
   }
 }
 
-export function PolygonProvider({ children, initialPolygons }: { children: ReactNode; initialPolygons?: PolygonInputProps[] }) {
+export function PolygonProvider({
+  children,
+  initialPolygons,
+  isLineMode = false,
+}: Readonly<{
+  children: ReactNode;
+  initialPolygons?: PolygonInputProps[];
+  isLineMode?: boolean;
+}>) {
   const [state, dispatch] = useReducer(polygonReducer, {
     ...initialState,
     present: {
       polygons: initialPolygons?.length
         ? initialPolygons
-            .filter((polygon) => isPolygonClosed(polygon.points))
+            .filter((polygon) => isPolygonClosed(polygon.points, isLineMode))
             .map((polygon, index) => ({
-                id: uuidv4(),
+              id: uuidv4(),
               ...polygon,
               label: `Polygon ${index + 1}`,
               isFinished: true,
@@ -144,12 +152,9 @@ export function PolygonProvider({ children, initialPolygons }: { children: React
     },
   });
 
-  const setPolygons = useCallback(
-    (polygons: Polygon[], shouldUpdateHistory = true) => {
-      dispatch({ type: 'SET_POLYGONS', payload: { polygons, shouldUpdateHistory } });
-    },
-    []
-  );
+  const setPolygons = useCallback((polygons: Polygon[], shouldUpdateHistory = true) => {
+    dispatch({ type: 'SET_POLYGONS', payload: { polygons, shouldUpdateHistory } });
+  }, []);
 
   const setActivePolygonIndex = useCallback((index: number) => {
     dispatch({ type: 'SET_ACTIVE_POLYGON_INDEX', payload: index });
@@ -165,23 +170,29 @@ export function PolygonProvider({ children, initialPolygons }: { children: React
 
   const undo = useCallback(() => {
     dispatch({ type: 'UNDO' });
-  }, []);
+    return state.past.at(-1);
+  }, [state]);
 
   const redo = useCallback(() => {
     dispatch({ type: 'REDO' });
-  }, []);
+    return state.future.at(-1);
+  }, [state]);
 
-  const value = {
-    state,
-    setPolygons,
-    setActivePolygonIndex,
-    updatePolygonLabel,
-    deleteAll,
-    undo,
-    redo,
-    canUndo: state.past.length > 0,
-    canRedo: state.future.length > 0,
-  };
+  const value = useMemo(
+    // Saving renders where PolygonProvider reruns without the state or any of callbacks actually changing
+    () => ({
+      state,
+      setPolygons,
+      setActivePolygonIndex,
+      updatePolygonLabel,
+      deleteAll,
+      undo,
+      redo,
+      canUndo: state.past.length > 0,
+      canRedo: state.future.length > 0,
+    }),
+    [state, setPolygons, setActivePolygonIndex, updatePolygonLabel, deleteAll, undo, redo],
+  );
 
   return <PolygonContext.Provider value={value}>{children}</PolygonContext.Provider>;
 }
@@ -192,4 +203,4 @@ export function usePolygonContext() {
     throw new Error('usePolygonContext must be used within a PolygonProvider');
   }
   return context;
-} 
+}
