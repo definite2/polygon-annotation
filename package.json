@@ -1,6 +1,6 @@
 {
   "name": "polygon-annotation",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "type": "commonjs",
   "description": "",
   "author": "Defne E. <edefne878@gmail.com> (https://github.com/definite2)",
@@ -17,9 +17,7 @@
     "test": "vitest",
     "test:component": "cypress run --config video=false --component"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "exports": {
     ".": {
       "import": "./dist/polygon-annotation.es.js",
@@ -46,6 +44,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.2.5",
+    "react-router-dom": "^7.6.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vite-plugin-dts": "^3.5.2",

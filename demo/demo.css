@@ -12,9 +12,15 @@
   -webkit-text-size-adjust: 100%;
 }
 .App {
+  position: relative;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   gap: 24px;
+  padding-inline-start: 1rem;
+}
+nav {
+  padding-inline-start: 1rem;
 }
 a {
   font-weight: 500;
@@ -56,15 +62,32 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.demo-video {
+  width: 600px;
+  height: 330px;
+}
+
+.polygon-annotation {
+  /* position: absolute;
+  inset-inline-start: 0;
+  &.static {
+    position: static;
+  } */
+}
+.video-example__container {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+}
+.video-example__polygon-annotation {
+  position: absolute;
+  inset-inline-start: 0;
+}
+
+:root {
+  color: #213547;
+  background-color: #f5f5f5;
+}
+a:hover {
+  color: #747bff;
 }

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useRef, useState } from 'react';
 import { PolygonAnnotation, PolygonStyleProps } from '../src/lib';
 import Toolbar from './Toolbar';
+
 const initialData = [
   {
     id: 'd3ab238e-c2fd-4337-a397-3d813f575894',
@@ -32,9 +33,7 @@ const initialData = [
   },
 ];
 
-const videoSource = './space_landscape.jpg';
-
-const AnnotationDraw = () => {
+const VideoExample = () => {
   const [maxPolygons, setMaxPolygons] = useState<number>(initialData.length || 1);
   const [showLabel, setShowLabel] = useState<boolean>(false);
   const [polygonStyle, setPolygonStyle] = useState<PolygonStyleProps>({
@@ -45,14 +44,50 @@ const AnnotationDraw = () => {
     vertexStrokeWidth: 2,
   });
 
+  const [videoDimentions, setVideoDimentions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const videoSource = 'https://www.w3schools.com/html/mov_bbb.mp4';
+
   return (
-    <div className="App">
+    <div className="video-example__container">
+      <video
+        ref={videoRef}
+        onLoadedData={() => {
+          const video = videoRef.current;
+          if (video) {
+            const videoOrginalWidth = video.videoWidth;
+            const videoOrginalheight = video.videoHeight;
+            const videoRect = video.getBoundingClientRect();
+            const computedWidth = videoRect.width;
+            const computedHeight = videoRect.height;
+            if (videoOrginalWidth && videoOrginalheight)
+              setVideoDimentions({
+                width: computedWidth,
+                height: computedHeight,
+              });
+          }
+        }}
+        className="demo-video"
+        autoPlay
+        muted
+        loop
+      >
+        <source src={videoSource} type="video/mp4" />
+        <track kind="captions" src="" label="No captions" default />
+        Your browser does not support the video tag.
+      </video>
       <PolygonAnnotation
-        bgImage={videoSource}
+        imageSize={videoDimentions || { width: 600, height: 300 }} //rename to mediaSize
         maxPolygons={maxPolygons}
         polygonStyle={polygonStyle}
         showLabel={showLabel}
         initialPolygons={initialData}
+        className={`video-example__polygon-annotation polygon-annotation`}
       >
         <Toolbar
           maxPolygons={maxPolygons}
@@ -67,4 +102,4 @@ const AnnotationDraw = () => {
   );
 };
 
-export default AnnotationDraw;
+export default VideoExample;
